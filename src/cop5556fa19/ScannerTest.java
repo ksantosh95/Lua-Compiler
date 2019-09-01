@@ -116,7 +116,7 @@ class ScannerTest {
 	
 	@Test
 	void test4() throws Exception {
-		Reader r = new StringReader(",,");
+		Reader r = new StringReader("....");
 		Scanner s = new Scanner(r);
 		Token t;
 		show(t= s.getNext());
