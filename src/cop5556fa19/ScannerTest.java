@@ -115,11 +115,12 @@ class ScannerTest {
 	
 	@Test
 	void test4() throws Exception {
-		Reader r = new StringReader("\'\t\'");
+		Reader r = new StringReader("if(");
 		Scanner s = new Scanner(r);
 		Token t;
 		show(t= s.getNext());
-	
+		show(t= s.getNext());
+		show(t= s.getNext());
 		/*
 		show(t = s.getNext());
 		assertEquals(t.kind,COLONCOLON);
@@ -130,5 +131,26 @@ class ScannerTest {
 		assertEquals(t.text,"==");*/
 	}
 
+
+	@Test
+	void test5() throws Exception {
+		Reader r = new StringReader("if(a==b)\ncs\r\nqwe \r {print(\"this is test\")} --comment");
+		Scanner s = new Scanner(r);
+		Token t;
+		do
+		{
+			show(t= s.getNext());
+		}
+		while(t.kind!=EOF);
+		
 	
+		/*
+		show(t = s.getNext());
+		assertEquals(t.kind,COLONCOLON);
+		assertEquals(t.text,"::");
+		
+		show(t = s.getNext());
+		assertEquals(t.kind,REL_EQEQ);
+		assertEquals(t.text,"==");*/
+	}
 }
