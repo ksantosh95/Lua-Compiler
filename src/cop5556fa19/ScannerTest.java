@@ -94,7 +94,7 @@ class ScannerTest {
 	 */
 	@Test
 	void test3() throws Exception {
-		Reader r = new StringReader(",,");
+		Reader r = new StringReader(",,::==");
 		Scanner s = new Scanner(r);
 		Token t;
 		show(t= s.getNext());
@@ -103,24 +103,23 @@ class ScannerTest {
 		show(t = s.getNext());
 		assertEquals(t.kind,COMMA);
 		assertEquals(t.text,",");
-		
 		show(t = s.getNext());
-		/*assertEquals(t.kind,COLONCOLON);
+		assertEquals(t.kind,COLONCOLON);
 		assertEquals(t.text,"::");
 		
 		show(t = s.getNext());
 		assertEquals(t.kind,REL_EQEQ);
-		assertEquals(t.text,"==");*/
+		assertEquals(t.text,"==");
 	}
 
 	
 	@Test
 	void test4() throws Exception {
-		Reader r = new StringReader("....");
+		Reader r = new StringReader("\'\t\'");
 		Scanner s = new Scanner(r);
 		Token t;
 		show(t= s.getNext());
-
+	
 		/*
 		show(t = s.getNext());
 		assertEquals(t.kind,COLONCOLON);

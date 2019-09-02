@@ -31,7 +31,8 @@ public class Scanner {
 
 	public enum State {
         START,
-        HAS_EQ,
+        IN_QUOTES,
+        IN_APOSTROPE,
         IN_NUMLIT,
         IN_IDENT
     }
@@ -64,7 +65,8 @@ public class Scanner {
     public Token getNext() throws Exception {
         getChar();
 
-        //StringBuilder sb;
+        StringBuilder sb;
+        sb=new StringBuilder();
         int pos = -1;
         int line = 0;
         State state = State.START;
@@ -370,16 +372,303 @@ public class Scanner {
                                 }
                                 break;
                             case -1:
-                                return new Token(EOF, "eof", pos, 0);
-
+                            {
+                            	return new Token(EOF, "eof", pos, 0);
+                            }
                             default:
-                                System.out.println("failure");
+                                {
+                                	if(Character.isDigit(ch))
+                                	{
+                                		if((char)ch=='0')
+                                		{
+                                			t= new Token(INTLIT,"0",pos,line);
+                                			System.out.println(t);
+                                			getChar();
+                                			t=null;
+                                		}
+                                		else
+                                		{
+                                		state = State.IN_NUMLIT;	
+                                		sb=new StringBuilder();
+                                		sb.append((char)ch);
+                                		getChar();
+                                		}
+                                	}
+                                	else if(Character.isAlphabetic(ch))
+                                	{
+                                		state = State.IN_IDENT;
+                                		sb=new StringBuilder();
+                                		sb.append((char)ch);
+                                		getChar();
+                                		
+                                	}
+                                	else if((char)ch=='\"')
+                                	{
+                                		state= State.IN_QUOTES;
+                                		sb= new StringBuilder();
+                                		sb.append((char)ch);
+                                		getChar();
+                                	}
+                                	else if((char)ch=='\'')
+                                	{
+                                		state= State.IN_APOSTROPE;
+                                		sb= new StringBuilder();
+                                		sb.append((char)ch);
+                                		getChar();
+                                	}
+                                	else
+                                	{
+                                		throw new LexicalException("Unacceptable Character "+(char)ch+" found at position "+pos+" on line no:"+line);
+                                	}
                                 break;
+                                }
                         }
                         break;
                     }
+                case IN_NUMLIT:
+                {
+                	
+                	if(Character.isDigit(ch))
+                	{
+                		sb.append((char)ch);
+                		getChar();
+                	}
+                	else
+                	{
+                		t = new Token(INTLIT,sb.toString(),pos,line);
+                		System.out.println(t);
+                		state=State.START;
+                		t=null;
+                	}
+                }break;
+                
+                case IN_IDENT:
+                {
+                	if(Character.isJavaIdentifierPart(ch))
+                	{
+                		sb.append((char)ch);
+                		getChar();
+                	}
+                	else
+                	{
+                		switch(sb.toString())
+                		{
+                		case "and":
+                		{
+                			t=new Token(KW_and,"and",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "break":
+                		{
+                			t=new Token(KW_break,"break",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "do":
+                		{
+                			t=new Token(KW_do,"do",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "else":
+                		{
+                			t=new Token(KW_else,"else",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                	
+                		case "elseif":
+                		{
+                			t=new Token(KW_elseif,"elseif",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "end":
+                		{
+                			t=new Token(KW_end,"end",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "false":
+                		{
+                			t=new Token(KW_false,"false",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "for":
+                		{
+                			t=new Token(KW_for,"for",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "function":
+                		{
+                			t=new Token(KW_function,"function",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "goto":
+                		{
+                			t=new Token(KW_goto,"goto",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "if":
+                		{
+                			t=new Token(KW_if,"if",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "in":
+                		{
+                			t=new Token(KW_in,"in",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "local":
+                		{
+                			t=new Token(KW_local,"local",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "nil":
+                		{
+                			t=new Token(KW_nil,"nil",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "not":
+                		{
+                			t=new Token(KW_not,"not",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "or":
+                		{
+                			t=new Token(KW_or,"or",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "repeat":
+                		{
+                			t=new Token(KW_repeat,"repeat",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "return":
+                		{
+                			t=new Token(KW_return,"return",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "then":
+                		{
+                			t=new Token(KW_then,"then",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "true":
+                		{
+                			t=new Token(KW_true,"true",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "until":
+                		{
+                			t=new Token(KW_until,"until",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		case "while":
+                		{
+                			t=new Token(KW_while,"while",pos,line);	
+                			System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		
+                		default:
+                		{
+                			t=new Token(NAME,sb.toString(),pos,line);
+                    		System.out.println(t);
+                    		state=State.START;
+                    		t=null;
+                		}break;
+                		}
+                		
+                	}
+                }break;
+                
+                case IN_QUOTES:
+                {
+                	if(ch==-1)
+                	{
+                		pos=pos+1;
+                		throw new LexicalException("String Literal should end with \" at pos "+pos+" on line no:"+line);
+                	}
+                	else if((char)ch=='\"')
+                	{
+                		sb.append((char)ch);
+                		t=new Token(STRINGLIT,sb.toString(),pos,line);
+                		System.out.println(t);
+                		state=State.START;
+                		t=null;
+                		getChar();
+                	}
+                	else
+                	{
+                		sb.append((char)ch);
+                		getChar();
+                	}
+                }break;
+                case IN_APOSTROPE:
+                {
+                	if(ch==-1)
+                	{
+                		pos=pos+1;
+                		throw new LexicalException("String Literal should end with \' at pos "+pos+" on line no:"+line);
+                	}
+                	else if((char)ch=='\'')
+                	{
+                		sb.append((char)ch);
+                		t=new Token(STRINGLIT,sb.toString(),pos,line);
+                		System.out.println(t);
+                		state=State.START;
+                		t=null;
+                		getChar();
+                	}
+                	else
+                	{
+                		sb.append((char)ch);
+                		getChar();
+                	}
+                }break;
                 default:
                     System.out.println("second failure");
+                    
+                    t=new Token(STRINGLIT,"xyz",pos,line);
             }
 
         }
