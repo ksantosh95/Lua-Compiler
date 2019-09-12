@@ -64,6 +64,11 @@ public class Scanner {
 
 
     }
+    
+    public void Esq_Char() throws Exception {
+    	getChar();
+    	
+    }
 
 
     public Token getNext() throws Exception {
@@ -76,7 +81,7 @@ public class Scanner {
         Token t = null;
         StringBuilder sb;
         sb = new StringBuilder();
-        int pos = -1;
+        int pos = 0;
         int line = 0;
         State state = State.START;
 
@@ -87,6 +92,7 @@ public class Scanner {
                     {
                     	while((char)ch=='\n' || (char)ch==' ' || (char)ch=='\f' || (char)ch=='\t' ||(char)ch=='\r')
                     	{
+                    		
                     		if((char)ch=='\n' || (char)ch=='\r')
                     		{
                     			if((char)ch=='\r')
@@ -142,7 +148,7 @@ public class Scanner {
                                 	else
                                 	{
                                     t = new Token(OP_MINUS, "-", pos, line);
-                                    next=true;
+                                    next=false;
                                 	}
                                 }
                                 break;
@@ -376,6 +382,7 @@ public class Scanner {
                                     if (Character.isDigit(ch)) {
                                         if ((char) ch == '0') {
                                             t = new Token(INTLIT, "0", pos, line);
+                                            next=true;
                                             break;
                                         } else {
                                             state = State.IN_NUMLIT;
@@ -602,6 +609,8 @@ public class Scanner {
 
                 case IN_QUOTES:
                     {
+                    	
+                    
                         if (ch == -1) {
                             pos = pos + 1;
                             throw new LexicalException("String Literal should end with \" at pos " + pos + " on line no:" + line);
@@ -612,13 +621,62 @@ public class Scanner {
                             getChar();
                             next=false;
                         }
-                        else if((char)ch =='\"' || (char)ch=='\\')
+                        else if((int)ch==92)
+                        {
+                        	
+                        	getChar();
+                        	next=true;
+                        	switch(ch)
+                        	{
+                        	case 'n': ch =10;
+                        	sb.append((char)ch);
+                        	
+                        	
+                        	break;
+                        	case 'a': ch=7;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'b': ch=8;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'f': ch=12;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'r': ch=13;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 't': ch=9;	
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'v': ch=11;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 92: ch=92;
+                        	sb.append((char)ch);
+                        	getChar();
+                        	break;
+                        	case '"': ch=34;
+                        	sb.append((char)ch);
+                        	getChar();
+                        	break;
+                        	case 39 : 
+                        		sb.append((char)ch);
+                            	break;
+                            	default :
+                            		throw new LexicalException("Symbol \\ not allowed in a string literal at pos " + pos + " on line no:" + line);
+                                    
+                        	}
+                        }
+                        else if((char)ch =='"' || ch==39)
                         {
                         	pos=currPos;
-                        	throw new LexicalException("Symbol "+(char)ch+" not allowed at pos " + pos + " on line no:" + line);
+                        	throw new LexicalException("Symbol "+(char)ch+" not allowed in a string literal at pos " + pos + " on line no:" + line);
                         
                     }else {
-                            sb.append((char) ch);
+                    		
+                            
+                    			sb.append((char) ch);
+                            
                             getChar();
                         }
                     }
@@ -635,10 +693,57 @@ public class Scanner {
                             getChar();
                             next=false;
                         }
-                            else if((char)ch =='\"' || (char)ch=='\\')
+                        else if((int)ch==92)
+                        {
+                        	
+                        	getChar();
+                        	next=true;
+                        	switch(ch)
+                        	{
+                        	case 'n': ch =10;
+                        	sb.append((char)ch);
+                        	
+                        	
+                        	break;
+                        	case 'a': ch=7;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'b': ch=8;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'f': ch=12;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'r': ch=13;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 't': ch=9;	
+                        	sb.append((char)ch);
+                        	break;
+                        	case 'v': ch=11;
+                        	sb.append((char)ch);
+                        	break;
+                        	case 92: ch=92;
+                        	sb.append((char)ch);
+                        	getChar();
+                        	break;
+                        	case 34: ch=34;
+                        	sb.append((char)ch);
+                        	getChar();
+                        	break;
+                        	case 39 : 
+                        		sb.append((char)ch);
+                        		getChar();
+                            	break;
+                            	default :
+                            		throw new LexicalException("Symbol \\ not allowed in a string literal at pos " + pos + " on line no:" + line);
+                                    
+                        	}
+                        }
+                            else if((char)ch =='\"'  || (char)ch=='"')
                             {
                             	pos=currPos;
-                            	throw new LexicalException("Symbol "+(char)ch+" not allowed at pos " + pos + " on line no:" + line);
+                            	throw new LexicalException("Symbol "+(char)ch+" not allowed in a string literal at pos " + pos + " on line no:" + line);
                             
                         } else {
                             sb.append((char) ch);
@@ -649,7 +754,7 @@ public class Scanner {
                 default:
                     
 
-                    t = new Token(STRINGLIT, "xyz", pos, line);
+                	throw new LexicalException("Invalid entry at pos " + pos + " on line no:" + line);
             }
 
         }
