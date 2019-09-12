@@ -419,9 +419,19 @@ public class Scanner {
                     	
                     	
                         if (Character.isDigit(ch)) {
+                        	
                             sb.append((char) ch);
+                            
                             getChar();
                         } else {
+                        	String s= sb.toString();
+                            try {
+                            	Integer.parseInt(s);
+                            	}
+                            catch(Exception e)	
+                            {
+                            	throw new LexicalException("Numeric literal limit exceeded at position " + pos + " on line no:" + line);
+                            	}
                             t = new Token(INTLIT, sb.toString(), pos, line);
                             state = State.START;
                             next=false;

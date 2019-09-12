@@ -821,7 +821,7 @@ class ScannerTest {
 	/*Testing code for invalid characters in name. Should fail*/
 	@Test
 	void test27() throws Exception {
-		Reader r = new StringReader("\\n");
+		Reader r = new StringReader("21474836847");
 		Scanner s = new Scanner(r);
 		Token t;
 		show(t= s.getNext());
