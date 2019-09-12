@@ -630,7 +630,7 @@ public class Scanner {
                         	{
                         	case 'n': ch =10;
                         	sb.append((char)ch);
-                        	
+                        	currLine=currLine+1;
                         	
                         	break;
                         	case 'a': ch=7;
@@ -644,6 +644,7 @@ public class Scanner {
                         	break;
                         	case 'r': ch=13;
                         	sb.append((char)ch);
+                        	currLine=currLine+1;
                         	break;
                         	case 't': ch=9;	
                         	sb.append((char)ch);
@@ -666,6 +667,12 @@ public class Scanner {
                             		throw new LexicalException("Symbol \\ not allowed in a string literal at pos " + pos + " on line no:" + line);
                                     
                         	}
+                        }
+                        else if((char)ch=='\n')
+                        {
+                        	currLine=currLine+1;
+                        	sb.append((char)ch);
+                        	getChar();
                         }
                         else if((char)ch =='"' || ch==39)
                         {
@@ -702,7 +709,7 @@ public class Scanner {
                         	{
                         	case 'n': ch =10;
                         	sb.append((char)ch);
-                        	
+                        	currLine=currLine+1;
                         	
                         	break;
                         	case 'a': ch=7;
@@ -716,6 +723,7 @@ public class Scanner {
                         	break;
                         	case 'r': ch=13;
                         	sb.append((char)ch);
+                        	currLine=currLine+1;
                         	break;
                         	case 't': ch=9;	
                         	sb.append((char)ch);
@@ -739,6 +747,12 @@ public class Scanner {
                             		throw new LexicalException("Symbol \\ not allowed in a string literal at pos " + pos + " on line no:" + line);
                                     
                         	}
+                        }
+                        else if((char)ch=='\n')
+                        {
+                        	currLine=currLine+1;
+                        	sb.append((char)ch);
+                        	getChar();
                         }
                             else if((char)ch =='\"'  || (char)ch=='"')
                             {

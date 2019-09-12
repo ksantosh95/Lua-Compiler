@@ -467,7 +467,7 @@ class ScannerTest {
 	}
 	
 	
-	/*Testing code for names starting with  _ and $ symbols*/
+	/*Testing code for names starting with  _ and $ symbols. Should fail*/
 	@Test
 	void test12() throws Exception {
 		Reader r = new StringReader("xu-+$Abc_08_");
@@ -809,19 +809,33 @@ class ScannerTest {
 		
 		
 		show(t = s.getNext());
-
-		assertEquals(t.kind,STRINGLIT);
-		assertEquals(t.getStringVal(),"\"");
+		show(t = s.getNext());
+		show(t = s.getNext());
+	//	assertEquals(t.kind,STRINGLIT);
+		//assertEquals(t.getStringVal(),"\"");
 		
 		show(t = s.getNext());
 		assertEquals(t.kind,EOF);
 	}
 	
+	/*Testing code for invalid characters in name. Should fail*/
+	@Test
+	void test27() throws Exception {
+		Reader r = new StringReader("\\n");
+		Scanner s = new Scanner(r);
+		Token t;
+		show(t= s.getNext());
+		
+		show(t= s.getNext());
+		assertEquals(t.kind,EOF);
+
+		
+	}
 	
 	
 	@Test
 	void test28() throws Exception {
-		String file = "C:\\Users\\Santosh Kannan\\Desktop\\UF\\Programming Language Principles\\Assigment 1\\testInputFiles\\test2.input"; 
+		String file = "C:\\Users\\Santosh Kannan\\Desktop\\UF\\Programming Language Principles\\Assigment 1\\testInputFiles\\test3"; 
 		Reader r = new BufferedReader(new FileReader(file));
 		Scanner s = new Scanner(r);
 		Token t;
