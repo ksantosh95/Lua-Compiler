@@ -51,6 +51,7 @@ public class Scanner {
     int currPos = -1;
     int currLine = 0;
     int ch;
+    boolean no_input = false;
     boolean next=true;
     
  
@@ -137,12 +138,20 @@ public class Scanner {
                                 break;
                             case '-':
                                 {
+                                	if(currPos==0 & currLine==0)
+                                	{
+                                		no_input= true;
+                                	}
                                 	getChar();
                                 	if((char)ch=='-')
                                 	{
                                 		while((char)ch!='\n' && (char)ch!='\r' && ch!=-1)
                                 		{
                                 			getChar();
+                                			if(ch==-1 & no_input)
+                                			{
+                                				throw new LexicalException("No input present in file");
+                                			}
                                 		}
                                 	}
                                 	else
@@ -641,30 +650,38 @@ public class Scanner {
                         	case 'n': ch =10;
                         	sb.append((char)ch);
                         	currLine=currLine+1;
-                        	
+                        	getChar();
                         	break;
                         	case 'a': ch=7;
                         	sb.append((char)ch);
+                        	getChar();
+                        	
                         	break;
                         	case 'b': ch=8;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'f': ch=12;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'r': ch=13;
                         	sb.append((char)ch);
                         	currLine=currLine+1;
+                        	getChar();
                         	break;
                         	case 't': ch=9;	
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'v': ch=11;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 92: ch=92;
                         	sb.append((char)ch);
                         	getChar();
+                        	
                         	break;
                         	case '"': ch=34;
                         	sb.append((char)ch);
@@ -720,29 +737,36 @@ public class Scanner {
                         	case 'n': ch =10;
                         	sb.append((char)ch);
                         	currLine=currLine+1;
-                        	
+                        	getChar();
                         	break;
                         	case 'a': ch=7;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'b': ch=8;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'f': ch=12;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'r': ch=13;
                         	sb.append((char)ch);
                         	currLine=currLine+1;
+                        	getChar();
                         	break;
                         	case 't': ch=9;	
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 'v': ch=11;
                         	sb.append((char)ch);
+                        	getChar();
                         	break;
                         	case 92: ch=92;
                         	sb.append((char)ch);
+                        	
                         	getChar();
                         	break;
                         	case 34: ch=34;
@@ -770,7 +794,7 @@ public class Scanner {
                             	throw new LexicalException("Symbol "+(char)ch+" not allowed in a string literal at pos " + pos + " on line no:" + line);
                             
                         } else {
-                            sb.append((char) ch);
+                            //sb.append((char) ch);
                             getChar();
                         }
                     }

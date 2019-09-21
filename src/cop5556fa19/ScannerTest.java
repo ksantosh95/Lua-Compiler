@@ -796,7 +796,7 @@ class ScannerTest {
 	/* Testing escape sequences from a file */
 	@Test
 	void test26() throws Exception {
-		String file = "C:\\Users\\Santosh Kannan\\Desktop\\UF\\Programming Language Principles\\Assigment 1\\testInputFiles\\test2.input"; 
+		String file = "C:\\Users\\Santosh Kannan\\eclipse-workspace\\Assignment_1\\src\\testInputFiles\\test2.input"; 
 		Reader r = new BufferedReader(new FileReader(file));
 		Scanner s = new Scanner(r);
 		Token t;
@@ -835,7 +835,7 @@ class ScannerTest {
 	
 	@Test
 	void test28() throws Exception {
-		String file = "C:\\Users\\Santosh Kannan\\Desktop\\UF\\Programming Language Principles\\Assigment 1\\testInputFiles\\test3"; 
+		String file = "testInputFiles\\test3"; 
 		Reader r = new BufferedReader(new FileReader(file));
 		Scanner s = new Scanner(r);
 		Token t;
@@ -854,5 +854,34 @@ class ScannerTest {
 		show(t = s.getNext());
 		assertEquals(t.kind,REL_EQEQ);
 		assertEquals(t.text,"==");*/
+	}
+	
+	
+	/*Inserting quotes  in string literal - should fail*/
+	@Test
+	void test29() throws Exception {
+		Reader r = new StringReader("\"\\aapple\\bbag \\ffood\\ttable\"");
+		Scanner s = new Scanner(r);
+		Token t;
+		do
+		{
+			show(t= s.getNext());
+		}
+		while(t.kind!=EOF);
+		
+	}
+	
+	/*Inserting quotes  in string literal - should fail*/
+	@Test
+	void test30() throws Exception {
+		Reader r = new StringReader("--cc");
+		Scanner s = new Scanner(r);
+		Token t;
+		do
+		{
+			show(t= s.getNext());
+		}
+		while(t.kind!=EOF);
+		
 	}
 }
