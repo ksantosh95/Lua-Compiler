@@ -161,13 +161,17 @@ class ExpressionParserTest {
 		
 	}
 	
-
+	
 	@Test
 	void testNameList() throws Exception {
-		String input = "x,y";
+		String input = "2 + 3 - 4";
 		Exp e = parseAndShow(input);
-		assertEquals(ExpName.class, e.getClass());
-		assertEquals("x,y", ((ExpName) e).name);
+		//Exp expected = Expressions.makeBinary(Expressions.makeBinary(Expressions.makeExpNil("nil"),
+		//		KW_or,
+		//		Expressions.makeExpNil("nil")),KW_or,
+		//		Expressions.makeExpNil("nil"));
+		//show("expected="+expected);
+		//assertEquals(expected,e);
 	}
 
 }

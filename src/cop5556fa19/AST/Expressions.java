@@ -61,5 +61,10 @@ public class Expressions {
 	}
 
 	
+	public static ExpNil makeExpNil(String s0)
+	{
+		Token t = new Token(Kind.KW_nil, s0, 0, 0);
+		return new ExpNil(t);
+	}
 	
 }

@@ -63,15 +63,19 @@ public class ExpressionParser {
 
 	Exp exp() throws Exception {
 		Token first = t;
+		List<String> l = new ArrayList<String>();
 		Token tmp = t;
 		Exp e0 = andExp();
+		//l.add(e0.toString());
+
+		
 		while (isKind(KW_or)) {
 			Token op = consume();
 			System.out.println(op.toString());
 			Exp e1 = andExp();
 			e0 = new ExpBinary(first, e0, op, e1);
 		}
-		System.out.println("string is"+t.toString());
+		
 		//System.out.println(isKind(OP_PLUS));
 		while (isKind(OP_PLUS)||isKind(OP_MINUS))
 		{
@@ -79,6 +83,10 @@ public class ExpressionParser {
 			if(isKind(OP_PLUS))
 			{
 				tmp = match(OP_PLUS);
+			}
+			else if(isKind(OP_MINUS))
+			{
+				tmp = match(OP_MINUS);
 			}
 			Exp e1 = andExp();
 			e0 = new ExpBinary(first, e0, tmp, e1);
@@ -90,22 +98,38 @@ public class ExpressionParser {
 private Exp andExp() throws Exception{
 		// TODO Auto-generated method stub
 	System.out.println(t.toString());
-	if(t.text=="true")
+	switch(t.kind)
 	{
-		System.out.println("Reached true");
-		ExpTrue b = new ExpTrue(t);
-		return b;
+	case KW_nil: ExpNil enil = new ExpNil(t);
+	consume();
+	return enil;
+	
+	case KW_false: ExpFalse efalse = new ExpFalse(t);
+	consume();
+	return efalse;
+	
+	case KW_true: ExpTrue etrue = new ExpTrue(t);
+	consume();
+	return etrue;
+	
+	case INTLIT: ExpInt eint = new ExpInt(t);
+	consume();
+	return eint;
+	
+	case STRINGLIT: ExpString estring = new ExpString(t);
+	consume();
+	return estring;
+	
+	case DOTDOTDOT: ExpVarArgs evarargs = new ExpVarArgs(t);
+	consume();
+	return evarargs;
+	
+	
+	
+	default: throw new UnsupportedOperationException(t.text);
 	}
-	else if(t.kind==NAME)
-	{
-		ExpName a = new ExpName(t);
-		return a;
-	}
-	else
-		{
-		ExpInt a = new ExpInt(t);
-		return a;
-		}
+	
+	
 	//t=scanner.getNext();
 	
 		//throw new UnsupportedOperationException("andExp");  //I find this is a more useful placeholder than returning null.
