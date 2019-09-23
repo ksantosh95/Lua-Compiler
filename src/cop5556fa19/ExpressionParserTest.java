@@ -114,7 +114,7 @@ class ExpressionParserTest {
 		show("expected="+expected);
 		assertEquals(expected,e);
 	}
-	
+//Failing
 	@Test
 	void testUnary0() throws Exception {
 		String input = "-2";
@@ -123,7 +123,8 @@ class ExpressionParserTest {
 		show("expected="+expected);
 		assertEquals(expected,e);
 	}
-	
+
+	//failing
 	@Test
 	void testUnary1() throws Exception {
 		String input = "-*2\n";
@@ -139,9 +140,9 @@ class ExpressionParserTest {
 		String input = "\"concat\" .. \"is\"..\"right associative\"";
 		Exp e = parseAndShow(input);
 		Exp expected = Expressions.makeBinary(
-				Expressions.makeExpString("concat")
+				Expressions.makeExpString("\"concat\"")
 				, DOTDOT
-				, Expressions.makeBinary("is",DOTDOT,"right associative"));
+				, Expressions.makeBinary("\"is\"",DOTDOT,"\"right associative\""));
 		show("expected=" + expected);
 		assertEquals(expected,e);
 	}
@@ -152,10 +153,10 @@ class ExpressionParserTest {
 		Exp e = parseAndShow(input);
 		Exp expected = Expressions.makeBinary(
 				Expressions.makeBinary(
-						Expressions.makeExpString("minus")
+						Expressions.makeExpString("\"minus\"")
 				, OP_MINUS
-				, Expressions.makeExpString("is")), OP_MINUS, 
-				Expressions.makeExpString("left associative"));
+				, Expressions.makeExpString("\"is\"")), OP_MINUS, 
+				Expressions.makeExpString("\"left associative\""));
 		show("expected=" + expected);
 		assertEquals(expected,e);
 		
@@ -164,7 +165,7 @@ class ExpressionParserTest {
 	
 	@Test
 	void testNameList() throws Exception {
-		String input = "2 + 3 - 4";
+		String input = "function (a) end";
 		Exp e = parseAndShow(input);
 		//Exp expected = Expressions.makeBinary(Expressions.makeBinary(Expressions.makeExpNil("nil"),
 		//		KW_or,
