@@ -79,12 +79,14 @@ public class Scanner {
     		next=true;
     	}
         
+ 
         Token t = null;
         StringBuilder sb;
         sb = new StringBuilder();
         int pos = 0;
         int line = 0;
         State state = State.START;
+    
 
         while (t == null) {
             //System.out.println((char)ch);
@@ -145,6 +147,7 @@ public class Scanner {
                                 	getChar();
                                 	if((char)ch=='-')
                                 	{
+                                	
                                 		while((char)ch!='\n' && (char)ch!='\r' && ch!=-1)
                                 		{
                                 			getChar();
@@ -383,8 +386,8 @@ public class Scanner {
                                 break;
                             case -1:
                                 {
-                                    return new Token(EOF, "eof", pos, line);
-                                    
+                                    t= new Token(EOF, "eof", pos, line);
+                                break;    
                                 }
                             default:
                                 {
@@ -794,7 +797,7 @@ public class Scanner {
                             	throw new LexicalException("Symbol "+(char)ch+" not allowed in a string literal at pos " + pos + " on line no:" + line);
                             
                         } else {
-                            //sb.append((char) ch);
+                            sb.append((char) ch);
                             getChar();
                         }
                     }
@@ -807,8 +810,7 @@ public class Scanner {
 
         }
         pos = pos + 1;
-        
-  
+      
         //replace this code.  Just for illustration
         return t;
 

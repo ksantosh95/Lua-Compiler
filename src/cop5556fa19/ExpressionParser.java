@@ -69,8 +69,10 @@ public class ExpressionParser {
 	Exp exp() throws Exception {
 		first = t;
 		
-		Token tmp = t;
+		//Token tmp = t;
 		Exp e0 = andExp();
+		
+		
 		//l.add(e0.toString());
 
 		
@@ -78,10 +80,19 @@ public class ExpressionParser {
 			Token op = consume();
 		
 			Exp e1 = andExp();
+			if(e1==null)
+			{
+				throw new SyntaxException(t,"Invalid Syntax");
+			}
 			e0 = new ExpBinary(first, e0, op, e1);
 		}
 		
 		//System.out.println(isKind(OP_PLUS));
+		if(e0==null)
+		{
+		throw new SyntaxException(first,"No Input");
+		
+		}
 		return e0;
 	}
 
@@ -94,6 +105,7 @@ private Exp andExp() throws Exception{
 	consume();
 		Exp e1 = relExp();
 		eand = new ExpBinary(first, eand, KW_and, e1);
+		
 	}
 	return eand;
 	
@@ -112,7 +124,7 @@ private Exp andExp() throws Exception{
 			op= consume();
 			e1 = bitorExp();
 			erel = new ExpBinary(first, erel, op, e1);
-			return erel;
+			
 		
 		}
 	
@@ -127,6 +139,8 @@ private Exp andExp() throws Exception{
 		consume();
 			Exp e1 = bitxorExp();
 			eor = new ExpBinary(first, eor, BIT_OR, e1);
+			
+			
 		}
 		return eor;
 	}
@@ -138,6 +152,7 @@ private Exp andExp() throws Exception{
 		consume();
 			Exp e1 = bitampExp();
 			exor = new ExpBinary(first, exor, BIT_XOR, e1);
+			
 		}
 		return exor;
 	}
@@ -150,6 +165,7 @@ private Exp andExp() throws Exception{
 		consume();
 			Exp e1 = bitExp();
 			eamp = new ExpBinary(first, eamp, BIT_AMP, e1);
+			
 		}
 		return eamp;
 	}
@@ -166,13 +182,15 @@ private Exp andExp() throws Exception{
 			consume();
 			e1 = dotdotExp();
 			ebit = new ExpBinary(first, ebit, BIT_SHIFTL, e1);
-			return ebit;
+			
+			break;
 			
 		case BIT_SHIFTR:
 			consume();
 			e1 = dotdotExp();
 			ebit = new ExpBinary(first, ebit, BIT_SHIFTR, e1);
-			return ebit;
+			
+			break;
 		}
 		
 		}
@@ -192,6 +210,10 @@ private Exp andExp() throws Exception{
 		execute = true;
 			//Exp e1 = terminal();
 			e1 = dotdotExp();	
+			if(e1==null)
+			{
+				throw new SyntaxException(t,"Invalid Syntax");
+			}
 		}
 		if(execute)
 		{
@@ -216,6 +238,10 @@ private Exp andExp() throws Exception{
 				tmp = match(OP_MINUS);
 			}
 			Exp e1 = divmulExp();
+			if(e1==null)
+			{
+				throw new SyntaxException(t,"Invalid syntax");
+			}
 			e0 = new ExpBinary(first, e0, tmp, e1);
 		}
 		
@@ -229,10 +255,13 @@ private Exp andExp() throws Exception{
 		{
 			
 				op= consume();
-			e2 = powExp();
-			e1 = new ExpBinary(first,e1,op,e2 );
-			return e1;
+			e2 = unaryExp();
 			
+			if(e2==null)
+			{
+				throw new SyntaxException(t,"Invalid syntax");
+			}
+			e1 = new ExpBinary(first,e1,op,e2 );
 			
 		}
 		return e1;
@@ -245,10 +274,16 @@ private Exp andExp() throws Exception{
 	{
 	if(isKind(OP_MINUS) | isKind(KW_not) | isKind(OP_HASH) | isKind(BIT_XOR))
 	{
-		System.out.println("reached here");
+		
 		Token op = consume();
 		Exp tmp_eunary = powExp();
+			if(tmp_eunary ==null)
+			{
+				
+				throw new SyntaxException(t,"Unary Operator expects Expression");
+			}
 		e1 = new ExpUnary(first ,op.kind, tmp_eunary );
+		
 		return e1;
 	}
 	}
@@ -260,13 +295,18 @@ private Exp andExp() throws Exception{
 	private Exp powExp() throws Exception{
 		Exp epow = terminal();
 		Exp e1= epow;
+		
 		boolean execute = false;
 		while (isKind(OP_POW))
 		{
 		consume();
 		execute = true;
 			//Exp e1 = terminal();
-			e1 = powExp();	
+			e1 = unaryExp();	
+			if(e1==null)
+			{
+				throw new SyntaxException(t,"Invalid Syntax");
+			}
 		}
 		if(execute)
 		{
@@ -335,7 +375,7 @@ private Exp andExp() throws Exception{
 	}
 
 	
-	private List fieldlist() throws Exception{
+	private List<Field> fieldlist() throws Exception{
 	List<Field> fl = new ArrayList<Field>();
 		Field f = field();
 		
@@ -366,6 +406,10 @@ private Exp andExp() throws Exception{
 	case LSQUARE:
 		consume();
 		key = exp();
+		if(key==null)
+		{
+			throw new SyntaxException(first,"Invalid syntax");
+		}
 		match(RSQUARE);
 		match(ASSIGN);
 		value=exp();
@@ -407,7 +451,7 @@ private Exp andExp() throws Exception{
 		return e1;
 	}
 	else
-		throw new UnsupportedOperationException("andExp");
+		throw new SyntaxException(first,"Incomplete function");
 	}
 	
 	
@@ -416,15 +460,15 @@ private Exp andExp() throws Exception{
 			ParList e1 ;
 			List<Name> l;
 			l = namelist();
-			System.out.println(l);
+		
 			if(l.isEmpty())
 			{
-				System.out.println("reached here");
+				
 				if(isKind(DOTDOTDOT))
 				{
 					boolean hasvarargs = true;
 					consume();
-					System.out.println(t);
+					
 					e1= new ParList(first,l,hasvarargs);
 				}
 				
@@ -434,13 +478,13 @@ private Exp andExp() throws Exception{
 				
 				if(isKind(COMMA))
 				{
-					System.out.println("reached here");
+					
 					consume();
 					if(isKind(DOTDOTDOT))
 					{
 						boolean hasvarargs = true;
 						consume();
-						System.out.println(t);
+						
 						e1= new ParList(first,l,hasvarargs);
 					}
 					else
@@ -455,20 +499,23 @@ private Exp andExp() throws Exception{
 					return new ParList(first,l,true);
 					
 					}
+				else
+					return new ParList(first,l,false);
 			}
 			return null;
 		}
 	
 	
-		private List namelist() throws Exception{
+		private List<Name> namelist() throws Exception{
 			
 			List<Name> l = new ArrayList<Name>();
 			Name nm ;
 			if(isKind(NAME))
 			{
-				System.out.println(first);
+				
 				nm = new Name(first,t.text);
 				l.add(nm);
+			
 				consume();
 			}
 			while(isKind(COMMA))
@@ -486,7 +533,7 @@ private Exp andExp() throws Exception{
 				}
 				else
 				{
-					throw new UnsupportedOperationException("andExp");
+					throw new SyntaxException(first,"Name List incomplete");
 				}
 			}
 			

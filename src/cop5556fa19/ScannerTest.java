@@ -781,7 +781,7 @@ class ScannerTest {
 	/*Inserting backslash  in string literal - should fail*/
 	@Test
 	void test25() throws Exception {
-		Reader r = new StringReader("\"abc\\ndef\"");
+		Reader r = new StringReader("\"abc\\def\"");
 		Scanner s = new Scanner(r);
 		Token t;
 		show(t= s.getNext());
