@@ -1010,10 +1010,39 @@ class ExpressionParserTest {
 		
 		@Test
 		void testEMPTY() throws Exception {
-			String input = " ";
+			String input = "{3}";
 			Exp e = parseAndShow(input);
 		}
 		
+		@Test
+		void testFailCase1() throws Exception {
+			String input = "function(...) end";
+			Exp e = parseAndShow(input);
+		}
+		
+		@Test
+		void testFailCase2() throws Exception {
+			String input = "- -23 --a";
+			Exp e = parseAndShow(input);
+		}
+		
+		@Test
+		void testFailCase3() throws Exception {
+			String input = "{}";
+			Exp e = parseAndShow(input);
+		}
+		
+		@Test
+		void testFailCase4() throws Exception {
+			String input = "{3,a}";
+			Exp e = parseAndShow(input);
+		}
+
+		@Test
+		void testFailCase5() throws Exception {
+			String input = "not #~1";
+			Exp e = parseAndShow(input);
+		}
 		
 }
 

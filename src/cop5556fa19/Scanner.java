@@ -145,12 +145,14 @@ public class Scanner {
                                 		no_input= true;
                                 	}
                                 	getChar();
+                                	//System.out.println((char)ch);
                                 	if((char)ch=='-')
                                 	{
-                                	
+                                	//System.out.println(t);
                                 		while((char)ch!='\n' && (char)ch!='\r' && ch!=-1)
                                 		{
                                 			getChar();
+                                			//System.out.println(t);
                                 			if(ch==-1 & no_input)
                                 			{
                                 				throw new LexicalException("No input present in file");
@@ -161,6 +163,7 @@ public class Scanner {
                                 	{
                                     t = new Token(OP_MINUS, "-", pos, line);
                                     next=false;
+                                    no_input =false;
                                 	}
                                 }
                                 break;

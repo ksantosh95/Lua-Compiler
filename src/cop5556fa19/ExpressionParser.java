@@ -276,7 +276,7 @@ private Exp andExp() throws Exception{
 	{
 		
 		Token op = consume();
-		Exp tmp_eunary = powExp();
+		Exp tmp_eunary = unaryExp();
 			if(tmp_eunary ==null)
 			{
 				
@@ -401,6 +401,7 @@ private Exp andExp() throws Exception{
 	Field f;
 	Exp key;
 	Exp value;
+	
 	switch(t.kind)
 	{
 	case LSQUARE:
@@ -417,20 +418,29 @@ private Exp andExp() throws Exception{
 		return f;
 		
 	case NAME:
+		//System.out.println(t);
 		Name nm = new Name(first,t.text);
+		Exp r = new ExpName(t);
 		consume();
+		if(t.kind==ASSIGN)
+		{
 		match(ASSIGN);
 		key=exp();
 		f=new FieldNameKey(first,nm,key);
 		return f;
-		
+		}
+		else
+		{
+			
+			return new FieldImplicitKey(first,r);
+		}
 	
 	case RCURLY:
 		return null;
 	default:
 		
 		key = exp();
-		
+		//System.out.println(t);
 		f = new FieldImplicitKey(first,key);
 		return f;
 	}
@@ -468,8 +478,8 @@ private Exp andExp() throws Exception{
 				{
 					boolean hasvarargs = true;
 					consume();
-					
-					e1= new ParList(first,l,hasvarargs);
+					System.out.println("Reached");
+					return new ParList(first,l,hasvarargs);
 				}
 				
 			}
@@ -485,7 +495,7 @@ private Exp andExp() throws Exception{
 						boolean hasvarargs = true;
 						consume();
 						
-						e1= new ParList(first,l,hasvarargs);
+						return new ParList(first,l,hasvarargs);
 					}
 					else
 					{
@@ -548,7 +558,7 @@ private Exp andExp() throws Exception{
 	
 	
 	private Block block() {
-		return new Block(null);  //this is OK for Assignment 2
+		return null;  //this is OK for Assignment 2
 	}
 
 
