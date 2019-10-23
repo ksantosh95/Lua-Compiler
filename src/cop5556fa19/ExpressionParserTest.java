@@ -1044,5 +1044,11 @@ class ExpressionParserTest {
 			Exp e = parseAndShow(input);
 		}
 		
+		@Test
+		void testbuild1() throws Exception {
+			String input = "a:b(c)";
+			Exp e = parseAndShow(input);
+		}
+		
 }
 

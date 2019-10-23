@@ -23,11 +23,13 @@ import cop5556fa19.AST.Exp;
 import cop5556fa19.AST.ExpBinary;
 import cop5556fa19.AST.ExpFalse;
 import cop5556fa19.AST.ExpFunction;
+import cop5556fa19.AST.ExpFunctionCall;
 import cop5556fa19.AST.ExpInt;
 import cop5556fa19.AST.ExpName;
 import cop5556fa19.AST.ExpNil;
 import cop5556fa19.AST.ExpString;
 import cop5556fa19.AST.ExpTable;
+import cop5556fa19.AST.ExpTableLookup;
 import cop5556fa19.AST.ExpTrue;
 import cop5556fa19.AST.ExpUnary;
 import cop5556fa19.AST.ExpVarArgs;
@@ -345,14 +347,16 @@ private Exp andExp() throws Exception{
 		return evarargs;
 		
 		
-		case NAME: ExpName ename = new ExpName(t);
-		consume();
-		return ename;
-		
-		case LPAREN:consume();
-		e2 = exp();
-		match(RPAREN);
+		case NAME: //ExpName ename = new ExpName(t);
+		//consume();
+		e2= prefixexptail();
+		//return ename;
 		return e2;
+		
+		case LPAREN://consume();
+		//e2 = exp();
+		//match(RPAREN);
+		return prefixexptail();
 		
 		case KW_function:
 			consume();
@@ -549,10 +553,151 @@ private Exp andExp() throws Exception{
 			
 			return l;
 		}
+		
+		private Exp prefixexp() throws Exception{
+		switch(t.kind)
+		{
+			case NAME: ExpName ename = new ExpName(t);
+			consume();
+			return ename;
+		
+			case LPAREN:consume();
+			Exp e3 = exp();
+			match(RPAREN);
+			return e3;
+			
+			default : return null;
+		}
+		
+		}
+		private Exp prefixexptail() throws Exception{
+			List<Exp> explist = new ArrayList<Exp>();
+			Exp e1;
+			Exp e=prefixexp();
+			for(;;)
+			{
+				switch(t.kind)
+			
+				{
+				case LSQUARE:consume();
+							e1 = exp();
+							match(RSQUARE);
+							e =new ExpTableLookup(first,e,e1);
+							break;
+					
+				case DOT:consume();
+						if(t.kind==NAME)
+						{
+							ExpName ename = new ExpName(t);
+							e= new ExpTableLookup(first,e,ename);
+							consume();
+							break;
+						}
+						else
+						{
+							throw new SyntaxException(first,"Name expected");
+						}
+				
+				case LPAREN:
+							explist = args();
+							
+							e = new ExpFunctionCall(first,e,explist);
+							break;
+							
+				case LCURLY:
+							explist = args();
+							e = new ExpFunctionCall(first,e,explist);
+							break;
+							
+				case STRINGLIT:
+							
+							explist = args();
+							
+							e = new ExpFunctionCall(first,e,explist);
+							break;
+							
+				case COLON:consume();
+							if(t.kind==NAME) {
+								ExpName nm = new ExpName(t);
+								consume();
+								e = new ExpTableLookup(first,e,nm);
+								explist = args();
+								e = new ExpFunctionCall(first,e,explist);
+								break;
+							}
+							else
+							{
+								throw new SyntaxException(first,"Name expected for function call");
+							}
+							
+							
+							
+				default : return e;
+			}
+		}
+			
+		}
 	
+private List<Exp> args() throws Exception{
+	List<Exp> explist = new ArrayList<Exp>();
 	
+	switch(t.kind)
+	{
+	case LPAREN:consume();
+	explist = explist();
+	match(RPAREN);
+	return explist;
 	
+	case LCURLY:consume();
+	List<Field> fl = fieldlist();
+	match(RCURLY);
+	Exp e2 = new ExpTable(first,fl);
+	explist.add(e2);
+	return explist;
 	
+	case STRINGLIT:
+		
+	e2 = exp();
+	//System.out.println(e2);
+	explist.add(e2);
+	
+	return explist;
+	
+	default : return null;
+	}
+}	
+		
+private List<Exp> explist() throws Exception{
+			
+			List<Exp> l = new ArrayList<Exp>();
+			Exp e ;
+			e = exp();
+		
+			if(e==null )
+			{
+				throw new SyntaxException(first,"Expression expected in expression list after comma");
+			}
+			l.add(e);
+			
+			
+			while(isKind(COMMA))
+			{
+				consume();
+				e=exp();
+			
+				if(e==null )
+				{
+					throw new SyntaxException(first,"Expression expected in expression list after comma");
+				}
+				else
+				{
+					l.add(e);
+				}
+			}
+			
+			return l;
+		}
+		
 	
 	
 	
