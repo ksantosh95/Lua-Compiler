@@ -40,13 +40,28 @@ import cop5556fa19.AST.FieldExpKey;
 import cop5556fa19.AST.FieldImplicitKey;
 import cop5556fa19.AST.FieldNameKey;
 import cop5556fa19.AST.FuncBody;
+import cop5556fa19.AST.FuncName;
 import cop5556fa19.AST.Name;
 import cop5556fa19.AST.ParList;
+import cop5556fa19.AST.RetStat;
 import cop5556fa19.AST.Stat;
+import cop5556fa19.AST.StatAssign;
+import cop5556fa19.AST.StatBreak;
+import cop5556fa19.AST.StatDo;
+import cop5556fa19.AST.StatFor;
+import cop5556fa19.AST.StatForEach;
+import cop5556fa19.AST.StatFunction;
+import cop5556fa19.AST.StatGoto;
+import cop5556fa19.AST.StatIf;
+import cop5556fa19.AST.StatLabel;
+import cop5556fa19.AST.StatLocalAssign;
+import cop5556fa19.AST.StatLocalFunc;
+import cop5556fa19.AST.StatRepeat;
+import cop5556fa19.AST.StatWhile;
 import cop5556fa19.Token.Kind;
 import static cop5556fa19.Token.Kind.*;
 
-public class ExpressionParser {
+public class Parser {
 	
 	@SuppressWarnings("serial")
 	class SyntaxException extends Exception {
@@ -61,7 +76,7 @@ public class ExpressionParser {
 	Token t;  //invariant:  this is the next token
 
 
-	ExpressionParser(Scanner s) throws Exception {
+	Parser(Scanner s) throws Exception {
 		this.scanner = s;
 		t = scanner.getNext(); //establish invariant
 	}
@@ -384,8 +399,11 @@ private Exp andExp() throws Exception{
 	private List<Field> fieldlist() throws Exception{
 	List<Field> fl = new ArrayList<Field>();
 		Field f = field();
+		if(f!=null)
+		{
+			fl.add(f);	
+		}
 		
-		fl.add(f);
 		while(isKind(COMMA) | isKind(SEMI))
 		{
 			consume();
@@ -590,7 +608,7 @@ private Exp andExp() throws Exception{
 				case DOT:consume();
 						if(t.kind==NAME)
 						{
-							ExpName ename = new ExpName(t);
+							ExpString ename = new ExpString(t);
 							e= new ExpTableLookup(first,e,ename);
 							consume();
 							break;
@@ -702,7 +720,7 @@ private List<Exp> explist() throws Exception{
 		
 	
 	
-	private Chunk chunk()
+	public Chunk parse() throws Exception
 	{
 		Chunk c ;
 		Block b = block();
@@ -710,27 +728,384 @@ private List<Exp> explist() throws Exception{
 		return c;
 	}
 	
-	private Block block() {
+	private Block block() throws Exception {
 		List<Stat> l = new ArrayList<Stat>();
+		List<Exp> elist = new ArrayList<Exp>();
 		Block b;
 		Stat s;
 		s = stat();
-		l.add(s);
+		if(s!=null)
+		{
+			l.add(s);
+		}
+		if(t.kind==SEMI)
+		{
+			consume();
+		}
 		while(s!=null)
 		{
+			
 			s =  stat();
+			
 			if(s!=null)
-			{l.add(s);
+			{
+				l.add(s);
 				}
+			
+			if(t.kind==SEMI)
+			{
+				consume();
+			}
+		}
+		if(t.kind==KW_return)
+		{
+			elist = explist();
+			if(t.kind==SEMI)
+			{
+				consume();
+			}
+			RetStat rs = new RetStat(first,elist);
+			l.add(rs);
 		}
 		b = new Block(first,l);
 		return b;  
 	}
 
-	private Stat stat() {
-		return null;
+	private Stat stat() throws Exception{
+		Stat s;
+		Exp e2;
+		Exp e3;
+		Exp e4=null;
+		Block b;
+		Name nm;
+		ExpName expnm=null;
+		FuncName fname;
+		FuncBody fbody;
+		List<Exp> explist = new ArrayList<Exp>();
+		List<Exp> varlist = new ArrayList<Exp>();
+		List<Block> blocklist = new ArrayList<Block>();
+		List<ExpName> namelist = new ArrayList<ExpName>();
+		List<ExpName> namelist_2 = new ArrayList<ExpName>();
+		switch(t.kind)
+		{
+		
+					
+		case NAME: e2= prefixexptail();
+					varlist.add(e2);
+					
+					
+					while(t.kind==COMMA)
+					{
+						consume();
+						e2 = prefixexptail();
+						if(e2!=null)
+						{
+							varlist.add(e2);
+						}
+					
+					}
+					match(ASSIGN);
+					e3= exp();
+					if(e3==null)
+					{
+						throw new SyntaxException(first,"Expression expected in statement");
+					}
+					explist.add(e3);
+					
+					while(t.kind==COMMA)
+					{
+						consume();
+						e3 = exp();
+						if(e3!=null)
+						{
+							explist.add(e3);
+						}
+					}
+					s= new StatAssign(first,varlist,explist);
+					return s;
+					
+					
+		case LPAREN:e2=prefixexptail();
+					varlist.add(e2);
+					
+					while(t.kind==COMMA)
+					{
+						consume();
+					
+						e2 = prefixexptail();
+						if(e2!=null)
+						{
+							varlist.add(e2);
+						}
+					}
+					match(ASSIGN);
+					e3= exp();
+					if(e3==null)
+					{
+						throw new SyntaxException(first,"Expression expected in statement");
+					}
+					explist.add(e3);
+					
+					while(t.kind==COMMA)
+					{
+						consume();
+					
+						e3 = exp();
+						if(e3!=null)
+						{
+							explist.add(e3);
+						}
+					}
+					s= new StatAssign(first,varlist,explist);
+					return s;
+		
+					
+		case COLONCOLON:match(COLONCOLON);
+						
+						nm = new Name(first,t.text);
+						consume();
+						match(COLONCOLON);
+						s = new StatLabel(first,nm);
+						return s;
+		
+		case KW_break: s= new StatBreak(first);
+						return s;
+		
+		case KW_goto: consume();
+						
+						nm = new Name(first,t.text);
+						consume();
+						s = new StatGoto(first,nm);
+						
+						return s;
+		
+		case KW_do: consume();
+					b = block();
+					match(KW_end);
+					s = new StatDo(first,b);
+					return s;
+		
+		case KW_while:consume();
+					e2 = exp();
+					match(KW_do);
+					b = block();
+					match(KW_end);
+					s = new StatWhile(first,e2,b);
+					return s;
+					
+		case KW_repeat:consume();
+					b=block();
+					match(KW_until);
+					e2=exp();
+					s = new StatRepeat(first,b,e2);
+					return s;
+					
+		case KW_if:consume();
+					e2 = exp();
+					if(e2==null)
+					{
+						throw new SyntaxException(first,"Expression missing after If");
+					}
+					explist.add(e2);
+					match(KW_then);
+					b=block();
+					blocklist.add(b);
+					while(t.kind == KW_elseif)
+					{
+						consume();
+						e2=exp();
+						if(e2==null)
+						{
+							throw new SyntaxException(first,"Expression missing after If");
+						}
+						explist.add(e2);
+						match(KW_then);
+						b=block();
+						blocklist.add(b);
+					}
+					if(t.kind==KW_else)
+					{
+						consume();
+						b=block();
+						blocklist.add(b);
+					}
+					match(KW_end);
+					s = new StatIf(first,explist,blocklist);
+					return s;
+					
+					
+		case KW_for: consume();
+					if(t.kind==NAME)
+					{
+						ExpName n = new ExpName(t);
+						namelist.add(n);
+						consume();
+						switch(t.kind)
+						{
+						case ASSIGN:consume();
+									e2=exp();
+									match(COMMA);
+									e3=exp();
+									if(t.kind==COMMA)
+									{
+										consume();
+										e4 = exp();
+									}
+									match(KW_do);
+									b=block();
+									match(KW_end);
+									s = new StatFor(first,n,e2,e3,e4,b);
+									return s;
+									
+						case COMMA: while(t.kind==COMMA)
+									{
+										consume();
+										if(t.kind==NAME)
+										{
+											n = new ExpName(t);
+											namelist.add(n);	
+										}
+										else
+										{
+											throw new SyntaxException(first,"Name expected after COMMA in statement");
+										}
+									}
+									match(KW_in);
+									explist = explist();
+									match(KW_do);
+									b=block();
+									match(KW_end);
+									s = new StatForEach(first,namelist,explist,b);
+									return s;
+									
+									
+						case KW_in:consume();
+									explist = explist();
+									match(KW_do);
+									b=block();
+									match(KW_end);
+									s = new StatForEach(first,namelist,explist,b);
+									return s;
+						}
+						
+					}
+					else
+					{
+						throw new SyntaxException(first,"Name expected after for");
+					}
+						
+					
+		case KW_function : consume();
+							if(t.kind==NAME)
+							{
+								ExpName n = new ExpName(t);
+								namelist.add(n);
+								consume();
+								while(t.kind==DOT)
+								{
+									consume();
+									if(t.kind==NAME)
+									{
+										n = new ExpName(t);
+										namelist.add(n);	
+									}
+									else
+									{
+										throw new SyntaxException(first,"Name expected after DOT in function name");
+									}
+								}
+								if(t.kind==COLON)
+								{
+									consume();
+									if(t.kind==NAME)
+									{
+										expnm = new ExpName(t);
+										consume();
+									}
+									else
+									{
+										throw new SyntaxException(first,"Name expected after COLON in function name");
+									}
+									
+								}
+								
+							}
+							else
+							{
+								throw new SyntaxException(first,"function name absent");
+							}
+							fname = new FuncName(first,namelist,expnm);
+							fbody = funcbody();
+							s = new StatFunction(first,fname,fbody);
+							return s;
+							
+		case KW_local : consume();
+						if(t.kind==KW_function)
+						{
+							consume();
+							if(t.kind==NAME)
+							{
+								expnm = new ExpName(t);
+								List<ExpName> namelist_3 = new ArrayList<ExpName>();
+								consume();
+								namelist_3.add(expnm);
+								fname = new FuncName(first,namelist_3,null);
+								fbody = funcbody();
+							}
+							else
+							{
+								throw new SyntaxException(first,"Name expected local function name declaration");
+								
+							}
+							s = new StatLocalFunc(first,fname,fbody);
+							return s;
+						}
+						else
+						{
+							if(t.kind==NAME)
+							{
+								ExpName n = new ExpName(t);
+								namelist.add(n);
+								consume();
+								while(t.kind==COMMA)
+								{
+									consume();
+									if(t.kind==NAME)
+									{
+										n = new ExpName(t);
+										namelist.add(n);	
+									}
+									else
+									{
+										throw new SyntaxException(first,"Name expected after COMMA in local function name");
+									}
+								}
+								if(t.kind==ASSIGN)
+								{
+									consume();
+									explist =explist();
+								}
+								s = new StatLocalAssign(first,namelist,explist);
+								return s;
+							}
+							
+							else
+							{
+								throw new SyntaxException(first,"Name expected local function name declaration");
+							}
+						}
+						
+		default: return null;
+		}
+		
+		
+		
+		
+		
 		
 	}
+	
+	
 	
 	protected boolean isKind(Kind kind) {
 		return t.kind == kind;
