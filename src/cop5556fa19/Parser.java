@@ -478,6 +478,10 @@ private Exp andExp() throws Exception{
 	{
 		consume();
 		p = parlist();
+		if(t.kind!=RPAREN)
+		{
+			throw new SyntaxException(t,"Incorrect function arguments. Name expected");
+		}
 		match(RPAREN);
 		b = block();
 		match(KW_end);
@@ -485,7 +489,7 @@ private Exp andExp() throws Exception{
 		return e1;
 	}
 	else
-		throw new SyntaxException(first,"Incomplete function");
+		throw new SyntaxException(t,"Incomplete function");
 	}
 	
 	
@@ -536,7 +540,7 @@ private Exp andExp() throws Exception{
 				else
 					return new ParList(first,l,false);
 			}
-			return null;
+			return new ParList(first,l,false);
 		}
 	
 	
@@ -796,7 +800,11 @@ private List<Exp> explist() throws Exception{
 		}
 		if(t.kind==KW_return)
 		{
-			elist = explist();
+			consume();
+			if(t.kind!=SEMI & t.kind!=EOF)
+			{
+				elist = explist();
+			}
 			if(t.kind==SEMI)
 			{
 				consume();
@@ -1032,9 +1040,11 @@ private List<Exp> explist() throws Exception{
 						case COMMA: while(t.kind==COMMA)
 									{
 										consume();
+										
 										if(t.kind==NAME)
 										{
 											n = new ExpName(t);
+											consume();
 											namelist.add(n);	
 										}
 										else
@@ -1042,6 +1052,7 @@ private List<Exp> explist() throws Exception{
 											throw new SyntaxException(first,"Name expected after COMMA in statement");
 										}
 									}
+									
 									match(KW_in);
 									explist = explist();
 									match(KW_do);
@@ -1073,17 +1084,19 @@ private List<Exp> explist() throws Exception{
 								ExpName n = new ExpName(t);
 								namelist.add(n);
 								consume();
+							
 								while(t.kind==DOT)
 								{
 									consume();
 									if(t.kind==NAME)
 									{
 										n = new ExpName(t);
+										consume();
 										namelist.add(n);	
 									}
 									else
 									{
-										throw new SyntaxException(first,"Name expected after DOT in function name");
+										throw new SyntaxException(t,"Name expected after DOT in function name");
 									}
 								}
 								if(t.kind==COLON)
@@ -1096,7 +1109,7 @@ private List<Exp> explist() throws Exception{
 									}
 									else
 									{
-										throw new SyntaxException(first,"Name expected after COLON in function name");
+										throw new SyntaxException(t,"Name expected after COLON in function name");
 									}
 									
 								}
@@ -1104,7 +1117,7 @@ private List<Exp> explist() throws Exception{
 							}
 							else
 							{
-								throw new SyntaxException(first,"function name absent");
+								throw new SyntaxException(t,"function name absent");
 							}
 							fname = new FuncName(first,namelist,expnm);
 							fbody = funcbody();
@@ -1126,7 +1139,7 @@ private List<Exp> explist() throws Exception{
 							}
 							else
 							{
-								throw new SyntaxException(first,"Name expected local function name declaration");
+								throw new SyntaxException(t,"Name expected local function name declaration");
 								
 							}
 							s = new StatLocalFunc(first,fname,fbody);
@@ -1145,11 +1158,12 @@ private List<Exp> explist() throws Exception{
 									if(t.kind==NAME)
 									{
 										n = new ExpName(t);
+										consume();
 										namelist.add(n);	
 									}
 									else
 									{
-										throw new SyntaxException(first,"Name expected after COMMA in local function name");
+										throw new SyntaxException(t,"Name expected after COMMA in local function name");
 									}
 								}
 								if(t.kind==ASSIGN)
@@ -1163,7 +1177,7 @@ private List<Exp> explist() throws Exception{
 							
 							else
 							{
-								throw new SyntaxException(first,"Name expected local function name declaration");
+								throw new SyntaxException(t,"Name expected local function name declaration");
 							}
 						}
 						

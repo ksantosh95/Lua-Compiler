@@ -853,10 +853,10 @@ class ParserTest {
 	
 	}
 	
-	/* Test case for block stat . Starting with for. Should pass */
+	/* Test case for block stat . Starting with for. Should FAIL */
 	@Test	
 	void testblockstatfor6() throws Exception {
-		String input = "if a>c then c=n else end";
+		String input = "for abc,nc in a+b,q-p end";
 		Block b = parseBlockAndShow(input);		
 	
 	}
@@ -864,20 +864,242 @@ class ParserTest {
 	/* Test case for block stat . Starting with for. Should pass */
 	@Test	
 	void testblockstatfor7() throws Exception {
-		String input = "if a>c then c=n else end";
+		String input = "for abc,nc in a+b do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor8() throws Exception {
+		String input = "for";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor13() throws Exception {
+		String input = "for in a+b do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor9() throws Exception {
+		String input = "for 123 in a+b do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor10() throws Exception {
+		String input = "for abc,mn in do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor11() throws Exception {
+		String input = "for abc,mn in pop do";
 		Block b = parseBlockAndShow(input);		
 	
 	}
 	
 	/* Test case for block stat . Starting with for. Should pass */
 	@Test	
-	void testblockstatfor8() throws Exception {
-		String input = "if a>c then c=n else end";
+	void testblockstatfor12() throws Exception {
+		String input = "for abc,mn in p-1 do for xyz in m do end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should pass */
+	@Test	
+	void testblockstatfor14() throws Exception {
+		String input = "for abc,mn in for do for xyz in m do end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc1() throws Exception {
+		String input = "function a () do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc2() throws Exception {
+		String input = "function b.c.a (p,n) do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc3() throws Exception {
+		String input = "function b.c:a () do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc4() throws Exception {
+		String input = "function b.123 () do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc5() throws Exception {
+		String input = "function b:123 () do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc6() throws Exception {
+		String input = "function b.d (123) do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc7() throws Exception {
+		String input = "function b:c do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc8() throws Exception {
+		String input = "function b:c do a=b end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc19() throws Exception {
+		String input = "local function name (p,q) ::label:: end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should FAIL */
+	@Test	
+	void testblockstatfunc9() throws Exception {
+		String input = "local function 123 (p,q) ::label:: end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should FAIL */
+	@Test	
+	void testblockstatfunc10() throws Exception {
+		String input = "local function abc,abc (p,q) ::label:: end ";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc11() throws Exception {
+		String input = "local function  nb () end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc20() throws Exception {
+		String input = "local abc,abc";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc13() throws Exception {
+		String input = "local abc,abc = bc";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should FAIL */
+	@Test	
+	void testblockstatfunc14() throws Exception {
+		String input = "local 123,abc = bs";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with function. Should FAIL */
+	@Test	
+	void testblockstatretstat() throws Exception {
+		String input = "local abc,abc = \"trp\" return ";
 		Block b = parseBlockAndShow(input);		
 	
 	}
 	
 	
+	/* Test case for block stat . Starting with function. Should FAIL */
+	@Test	
+	void testblockstatfunc15() throws Exception {
+		String input = "local abc,abc = v ret";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc16() throws Exception {
+		String input = "local abc,abc = v return exp ";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc17() throws Exception {
+		String input = "local abc,abc = v return ;";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with function. Should pass */
+	@Test	
+	void testblockstatfunc18() throws Exception {
+		String input = "local abc,abc = v return ; ::label::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for chunk. Should pass */
+	@Test	
+	void testchunk1() throws Exception {
+		String input = "local abc,abc = v return ; ::label::";
+		Chunk c = parseAndShow(input);		
+	
+	}
+	
+	/* Test case for chunk. Should pass */
+	@Test	
+	void testchunk2() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b] end end";
+		Chunk c = parseAndShow(input);		
+	
+	}
+	
+	/* Test case for chunk. Should pass */
+	@Test	
+	void testchunk3() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b] end";
+		Chunk c = parseAndShow(input);		
+	
+	}
 	
 	
 	@Test
