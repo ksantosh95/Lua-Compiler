@@ -83,7 +83,7 @@ public class Parser {
 
 	Token first;
 	boolean var_flg = false;
-	
+	boolean var_complete = false;
 	
 	Exp exp() throws Exception {
 		first = t;
@@ -109,7 +109,7 @@ public class Parser {
 		//System.out.println(isKind(OP_PLUS));
 		if(e0==null)
 		{
-		throw new SyntaxException(first,"No Input");
+		throw new SyntaxException(first,"No Input where expression is expected");
 		
 		}
 		return e0;
@@ -366,14 +366,14 @@ private Exp andExp() throws Exception{
 		
 		case NAME: //ExpName ename = new ExpName(t);
 		//consume();
-		e2= prefixexptail();
+		e2= prefixexptail(false);
 		//return ename;
 		return e2;
 		
 		case LPAREN://consume();
 		//e2 = exp();
 		//match(RPAREN);
-		return prefixexptail();
+		return prefixexptail(false);
 		
 		case KW_function:
 			consume();
@@ -579,21 +579,24 @@ private Exp andExp() throws Exception{
 		{
 			case NAME: ExpName ename = new ExpName(t);
 			consume();
+			var_complete=true;
 			return ename;
 		
 			case LPAREN:consume();
 			Exp e3 = exp();
 			match(RPAREN);
+			var_complete=false;
 			return e3;
 			
 			default : return null;
 		}
 		
 		}
-		private Exp prefixexptail() throws Exception{
+		private Exp prefixexptail(boolean var_call) throws Exception{
 			List<Exp> explist = new ArrayList<Exp>();
 			Exp e1;
 			Exp e=prefixexp();
+			
 			for(;;)
 			{
 				switch(t.kind)
@@ -603,6 +606,10 @@ private Exp andExp() throws Exception{
 							e1 = exp();
 							match(RSQUARE);
 							e =new ExpTableLookup(first,e,e1);
+							if(var_call)
+							{
+								var_complete=true;
+							}
 							break;
 					
 				case DOT:consume();
@@ -611,43 +618,64 @@ private Exp andExp() throws Exception{
 							ExpString ename = new ExpString(t);
 							e= new ExpTableLookup(first,e,ename);
 							consume();
+							if(var_call)
+							{
+								var_complete=true;
+							}
 							break;
 						}
 						else
 						{
-							throw new SyntaxException(first,"Name expected");
+							throw new SyntaxException(first,"Name expected in place of "+t.kind+" at position"+t.pos+" and line no. "+t.line);
 						}
 				
 				case LPAREN:
-							explist = args();
+							explist = args(null);
 							
 							e = new ExpFunctionCall(first,e,explist);
+							if(var_call)
+							{
+								var_complete=false;
+							}
 							break;
 							
 				case LCURLY:
-							explist = args();
+							explist = args(null);
 							e = new ExpFunctionCall(first,e,explist);
+							if(var_call)
+							{
+								var_complete=false;
+							}
 							break;
 							
 				case STRINGLIT:
 							
-							explist = args();
+							explist = args(null);
 							
 							e = new ExpFunctionCall(first,e,explist);
+							if(var_call)
+							{
+								var_complete=false;
+							}
 							break;
 							
 				case COLON:consume();
 							if(t.kind==NAME) {
 								ExpName nm = new ExpName(t);
 								consume();
+								Exp n = e;
 								e = new ExpTableLookup(first,e,nm);
-								explist = args();
+								explist = args(n);
 								e = new ExpFunctionCall(first,e,explist);
+								if(var_call)
+								{
+									var_complete=false;
+								}
 								break;
 							}
 							else
 							{
-								throw new SyntaxException(first,"Name expected for function call");
+								throw new SyntaxException(first,"Name expected for function call  in place of "+t.kind+" at position"+t.pos+" and line no. "+t.line);
 							}
 							
 							
@@ -658,13 +686,18 @@ private Exp andExp() throws Exception{
 			
 		}
 	
-private List<Exp> args() throws Exception{
+private List<Exp> args(Exp nm) throws Exception{
 	List<Exp> explist = new ArrayList<Exp>();
-	
+	List<Exp> explist2 = new ArrayList<Exp>();
+	if(nm!=null)
+	{
+		explist.add(nm);
+	}
 	switch(t.kind)
 	{
 	case LPAREN:consume();
-	explist = explist();
+	explist2 = explist();
+	explist.addAll(explist2);
 	match(RPAREN);
 	return explist;
 	
@@ -672,14 +705,16 @@ private List<Exp> args() throws Exception{
 	List<Field> fl = fieldlist();
 	match(RCURLY);
 	Exp e2 = new ExpTable(first,fl);
-	explist.add(e2);
+	explist2.add(e2);
+	explist.addAll(explist2);
 	return explist;
 	
 	case STRINGLIT:
 		
 	e2 = exp();
 	//System.out.println(e2);
-	explist.add(e2);
+	explist2.add(e2);
+	explist.addAll(explist2);
 	
 	return explist;
 	
@@ -725,6 +760,7 @@ private List<Exp> explist() throws Exception{
 		Chunk c ;
 		Block b = block();
 		c=  new Chunk(first,b);
+		if (!isKind(EOF)) throw new SyntaxException(t, "Parse ended before end of input");
 		return c;
 	}
 	
@@ -750,6 +786,7 @@ private List<Exp> explist() throws Exception{
 			if(s!=null)
 			{
 				l.add(s);
+				//System.out.println(s);
 				}
 			
 			if(t.kind==SEMI)
@@ -790,14 +827,23 @@ private List<Exp> explist() throws Exception{
 		{
 		
 					
-		case NAME: e2= prefixexptail();
+		case NAME: e2= prefixexptail(true);
+		
+		if(!var_complete)
+		{
+			throw new SyntaxException(first,"Var not ended properly at position "+t.pos+" at line "+t.line);
+		}
 					varlist.add(e2);
 					
 					
 					while(t.kind==COMMA)
 					{
 						consume();
-						e2 = prefixexptail();
+						e2 = prefixexptail(true);
+						if(!var_complete)
+						{
+							throw new SyntaxException(first,"Var not ended properly at position "+t.pos+" at line "+t.line);
+						}
 						if(e2!=null)
 						{
 							varlist.add(e2);
@@ -805,6 +851,7 @@ private List<Exp> explist() throws Exception{
 					
 					}
 					match(ASSIGN);
+					
 					e3= exp();
 					if(e3==null)
 					{
@@ -825,14 +872,23 @@ private List<Exp> explist() throws Exception{
 					return s;
 					
 					
-		case LPAREN:e2=prefixexptail();
+		case LPAREN:e2=prefixexptail(true);
+					if(!var_complete)
+					{
+						throw new SyntaxException(first,"Var not ended properly at position "+t.pos+" at line "+t.line);
+					}
+					System.out.println(e2);
 					varlist.add(e2);
 					
 					while(t.kind==COMMA)
 					{
 						consume();
 					
-						e2 = prefixexptail();
+						e2 = prefixexptail(true);
+						if(!var_complete)
+						{
+							throw new SyntaxException(first,"Var not ended properly at position "+t.pos+" at line "+t.line);
+						}
 						if(e2!=null)
 						{
 							varlist.add(e2);
@@ -861,27 +917,42 @@ private List<Exp> explist() throws Exception{
 		
 					
 		case COLONCOLON:match(COLONCOLON);
-						
-						nm = new Name(first,t.text);
-						consume();
-						match(COLONCOLON);
-						s = new StatLabel(first,nm);
-						return s;
-		
+						if(t.kind==NAME)
+							{
+							nm = new Name(first,t.text);
+							consume();
+							match(COLONCOLON);
+							s = new StatLabel(first,nm);
+							return s;
+							}
+						else
+						{
+							
+							throw new SyntaxException(t,"Name expected in label after COLONCOLON at position"+t.pos+" on line "+t.line);
+						}
 		case KW_break: s= new StatBreak(first);
+						consume();
 						return s;
 		
 		case KW_goto: consume();
-						
-						nm = new Name(first,t.text);
-						consume();
-						s = new StatGoto(first,nm);
-						
-						return s;
+						if(t.kind==NAME)
+							{
+							nm = new Name(first,t.text);
+							consume();
+							s = new StatGoto(first,nm);
+							
+							return s;
+							}
+						else
+						{
+							throw new SyntaxException(t,"Name expected in goto statement after COLONCOLON at position"+t.pos+" on line "+t.line);	
+						}
 		
 		case KW_do: consume();
+					
 					b = block();
 					match(KW_end);
+					
 					s = new StatDo(first,b);
 					return s;
 		
@@ -895,6 +966,7 @@ private List<Exp> explist() throws Exception{
 					
 		case KW_repeat:consume();
 					b=block();
+					
 					match(KW_until);
 					e2=exp();
 					s = new StatRepeat(first,b,e2);
@@ -991,7 +1063,7 @@ private List<Exp> explist() throws Exception{
 					}
 					else
 					{
-						throw new SyntaxException(first,"Name expected after for");
+						throw new SyntaxException(t,"Name expected after for");
 					}
 						
 					

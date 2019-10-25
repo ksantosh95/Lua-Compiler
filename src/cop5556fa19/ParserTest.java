@@ -232,13 +232,13 @@ class ParserTest {
 		StatBreak statBreak = Expressions.makeStatBreak();
 		Block expectedBlock = Expressions.makeBlock(s0,s1,statdo,statBreak);
 		Chunk expectedChunk = new Chunk(expectedBlock.firstToken, expectedBlock);
-		//show("expected="+expectedChunk);
+		show("expected="+expectedChunk);
 		assertEquals(expectedChunk,c);
 	}
 	
 	@Test
 	void testMultiStatements7() throws Exception {
-		String input = "x = g.a.b ; ::mylabel:: do  y = 2 goto mylabel f=a(0,200) end "; //same as testmultistatements0 except ;
+		String input = "x = g.a.b ; ::mylabel:: do  y = 2 goto mylabel f=a(0,200) end break"; //same as testmultistatements0 except ;
 		ASTNode c = parseAndShow(input);
 		
 	}
@@ -329,10 +329,555 @@ class ParserTest {
 	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
 	@Test	
 	void testPrefixexp8() throws Exception {
-		String input = "ab{3,a}";
+		String input = "ab:xy(l-m,n-k)";
+		Exp e = parseExpAndShow(input);		
+		Exp ab = Expressions.makeExpName("ab");
+		Exp xy = Expressions.makeExpName("xy");
+		Exp lm = Expressions.makeBinary(Expressions.makeExpName("l"),OP_MINUS,Expressions.makeExpName("m"));
+		Exp nk = Expressions.makeBinary(Expressions.makeExpName("n"),OP_MINUS,Expressions.makeExpName("k"));
+		List<Exp> args = Expressions.makeExpList(ab,lm,nk);
+		Exp tl = Expressions.makeExpTableLookup(ab, xy);
+		ExpFunctionCall fc = Expressions.makeExpFunCall(tl, args, null);
+		show("expected=" + fc);
+		assertEquals(e,fc);
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp9() throws Exception {
+		String input = "ab:xy{3,a}";
 		Exp e = parseExpAndShow(input);		
 	
 	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp10() throws Exception {
+		String input = "ab:xy\"lmn\"";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp11() throws Exception {
+		String input = "(a+b)[xyz]";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp12() throws Exception {
+		String input = "(a+b).xy";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp13() throws Exception {
+		String input = "(a+b)(l+m,x-y)";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp14() throws Exception {
+		String input = "(a+b) {field}";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp15() throws Exception {
+		String input = "(a+b)\"xy\"";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp16() throws Exception {
+		String input = "(a+b):xy(l-m,n-k)";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp17() throws Exception {
+		String input = "(a+b)[f].pq : lmn \"xy\" {fields}";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should fail */
+	@Test	
+	void testPrefixexp18() throws Exception {
+		String input = "ab.23";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp19() throws Exception {
+		String input = "ab[(x+y)(l-n)]";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should fail */
+	@Test	
+	void testPrefixexp20() throws Exception {
+		String input = "ab:(l)";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp21() throws Exception {
+		String input = "";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	
+	
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testPrefixexp25() throws Exception {
+		String input = "v:name (l,m,n)";
+		Exp e = parseExpAndShow(input);		
+	
+	}
+	
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat1() throws Exception {
+		String input = ";;;";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat2() throws Exception {
+		String input = "a=(l+m)";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat3() throws Exception {
+		String input = "(a+b).xy=(p+q)";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat4() throws Exception {
+		String input = "ab:xy{fields}.lmn=(p+q)(a+b)";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat5() throws Exception {
+		String input = "(a+b).xy:lmn\"pq\"=a+b,n.name";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat6() throws Exception {
+		String input = "(a+b).xy,(l)[m+n] = \"string1\",\"string2\"";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should FAIL */
+	@Test	
+	void testblockstat7() throws Exception {
+		String input = "(a+b)=a";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat8() throws Exception {
+		String input = "a[b]=g(k,l)[x.y]";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block statements. Case - valist = explist. Should pass */
+	@Test	
+	void testblockstat9() throws Exception {
+		String input = "g(k,l)[x.y]=a[b]";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block statements. Case - valist = explist. Should FAIL */
+	@Test	
+	void testblockstat10() throws Exception {
+		String input = "a(l,k)=y";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testblockstat11() throws Exception {
+		String input = "(a+b)(k,l)[x.y]=1";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should FAIL */
+	@Test	
+	void testblockstat12() throws Exception {
+		String input = "v:name (l,m,n)";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testblockstat13() throws Exception {
+		String input = "(a+b)[n],f{fields}.a,z=23";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should FAIL */
+	@Test	
+	void testblockstat14() throws Exception {
+		String input = "(a+b)[n],f{fields}.(v),z =23";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should fail */
+	@Test	
+	void testblockstat15() throws Exception {
+		String input = "(a+b)[n],f{fields}.a,(z)=23";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testblockstat16() throws Exception {
+		String input = "(a+b)[n],f{fields}.a,z=23; v=a";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for prefix exp. Starting with the non-terminal Name. Should pass */
+	@Test	
+	void testblockstat17() throws Exception {
+		String input = "(a+b)[n],f{fields}.a,z=23; (z)=v";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with label. Should pass */
+	@Test	
+	void testblockstatlabel1() throws Exception {
+		String input = "::a::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with label. Should FAIL */
+	@Test	
+	void testblockstatlabel2() throws Exception {
+		String input = "::::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with label. Should FAIL */
+	@Test	
+	void testblockstatlabel3() throws Exception {
+		String input = "::123::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with label. Should pass */
+	@Test	
+	void testblockstatlabel4() throws Exception {
+		String input = "::a:: ::b::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with label. Should pass */
+	@Test	
+	void testblockstatlabel5() throws Exception {
+		String input = "::a:: (a+b)[n],f{fields}.a,z=23; v=a ::v:: ; ::b::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should pass */
+	@Test	
+	void testblockstatgoto1() throws Exception {
+		String input = "goto abc1";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should FAIL */
+	@Test	
+	void testblockstatgoto2() throws Exception {
+		String input = "goto 124";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should pass */
+	@Test	
+	void testblockstatgoto3() throws Exception {
+		String input = "::a:: (a+b)[n],f{fields}.a,z=23; goto abc";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should pass */
+	@Test	
+	void testblockstatgoto4() throws Exception {
+		String input = "goto abc goto b";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should fail */
+	@Test	
+	void testblockstatgoto5() throws Exception {
+		String input = "goto";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should FAIL */
+	@Test	
+	void testblockstatgoto6() throws Exception {
+		String input = ":: goto c::";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with goto. Should FAIL */
+	@Test	
+	void testblockstatgoto7() throws Exception {
+		String input = "goto ; abc";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with break. Should pass */
+	@Test	
+	void testblockstatbreak1() throws Exception {
+		String input = "break";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with break. Should pass */
+	@Test	
+	void testblockstatbreak2() throws Exception {
+		String input = "break; break; goto c";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with break. Should FAIL */
+	@Test	
+	void testblockstatbreak3() throws Exception {
+		String input = "break abc;";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo1() throws Exception {
+		String input = "do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo2() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b] end break";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo3() throws Exception {
+		String input = "do do g(k,l)[x.y]=a[b] end end break";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should FAIL */
+	@Test	
+	void testblockstatdo4() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b]";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should FAIL */
+	@Test	
+	void testblockstatdo5() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b] end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo6() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b] end 23";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo7() throws Exception {
+		String input = "do g(k,l)[x.y]=a[b] end ; do end; do do do end end end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo8() throws Exception {
+		String input = "do goto b ::v:: end ";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo9() throws Exception {
+		String input = "while abc do g(k,l)[x.y]=a[b] end ";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should FAIL */
+	@Test	
+	void testblockstatdo10() throws Exception {
+		String input = "while abc ; do g(k,l)[x.y]=a[b] end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	/* Test case for block stat . Starting with do. Should pass */
+	@Test	
+	void testblockstatdo11() throws Exception {
+		String input = "while abc do g(k,l)[x.y]=a[b] end end a=c;";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+
+	/* Test case for block stat . Starting with repeat. Should FAIL */
+	@Test	
+	void testblockstatrepeat1() throws Exception {
+		String input = "repeat while abc do g(k,l)[x.y]=a[b] end end until a=c";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with repeat. Should pass */
+	@Test	
+	void testblockstatrepeat2() throws Exception {
+		String input = "repeat while abc do b=c end until x>y end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with repeat. Should FAIL */
+	@Test	
+	void testblockstatrepeat3() throws Exception {
+		String input = "repeat repeat while abc do g(k,l)[x.y]=a[b] end  until a=c while abc do b=c end until x>y ";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with repeat. Should pass */
+	@Test	
+	void testblockstatrepeat4() throws Exception {
+		String input = "repeat repeat while abc do g(k,l)[x.y]=a[b] end  until a>c until s";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with if. Should pass */
+	@Test	
+	void testblockstatif1() throws Exception {
+		String input = "if a>c then repeat while abc do g(k,l)[x.y]=a[b] end  until a>c elseif a<c then c=n end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with if. Should pass */
+	@Test	
+	void testblockstatif2() throws Exception {
+		String input = "if a>c then c=n else end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+
+	/* Test case for block stat . Starting with for. Should pass */
+	@Test	
+	void testblockstatfor1() throws Exception {
+		String input = "for c=a,n<b,-n do c=b end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor2() throws Exception {
+		String input = "for c=a,n<b end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should pass */
+	@Test	
+	void testblockstatfor3() throws Exception {
+		String input = "for c=a,n<b do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor4() throws Exception {
+		String input = "for c=a, do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should FAIL */
+	@Test	
+	void testblockstatfor5() throws Exception {
+		String input = "for 123=123 ,v do end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should pass */
+	@Test	
+	void testblockstatfor6() throws Exception {
+		String input = "if a>c then c=n else end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should pass */
+	@Test	
+	void testblockstatfor7() throws Exception {
+		String input = "if a>c then c=n else end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	/* Test case for block stat . Starting with for. Should pass */
+	@Test	
+	void testblockstatfor8() throws Exception {
+		String input = "if a>c then c=n else end";
+		Block b = parseBlockAndShow(input);		
+	
+	}
+	
+	
 	
 	
 	@Test
