@@ -52,7 +52,8 @@ public class TableDeref extends Var {
 
 	@Override
 	public Object visit(ASTVisitor v, Object arg) throws Exception {
-		return v.visitTableDeref(this, arg);
+		//return v.visitTableDeref(this, arg);
+		return null;
 	}
 
 }

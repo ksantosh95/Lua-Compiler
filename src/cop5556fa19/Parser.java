@@ -76,7 +76,7 @@ public class Parser {
 	Token t;  //invariant:  this is the next token
 
 
-	Parser(Scanner s) throws Exception {
+	public Parser(Scanner s) throws Exception {
 		this.scanner = s;
 		t = scanner.getNext(); //establish invariant
 	}
@@ -366,6 +366,7 @@ private Exp andExp() throws Exception{
 		
 		case NAME: //ExpName ename = new ExpName(t);
 		//consume();
+			
 		e2= prefixexptail(false);
 		//return ename;
 		return e2;
@@ -506,7 +507,7 @@ private Exp andExp() throws Exception{
 				{
 					boolean hasvarargs = true;
 					consume();
-					System.out.println("Reached");
+					
 					return new ParList(first,l,hasvarargs);
 				}
 				
@@ -582,6 +583,7 @@ private Exp andExp() throws Exception{
 		switch(t.kind)
 		{
 			case NAME: ExpName ename = new ExpName(t);
+			
 			consume();
 			var_complete=true;
 			return ename;
@@ -635,7 +637,7 @@ private Exp andExp() throws Exception{
 				
 				case LPAREN:
 							explist = args(null);
-							
+						
 							e = new ExpFunctionCall(first,e,explist);
 							if(var_call)
 							{
@@ -697,12 +699,18 @@ private List<Exp> args(Exp nm) throws Exception{
 	{
 		explist.add(nm);
 	}
+	
 	switch(t.kind)
 	{
 	case LPAREN:consume();
-	explist2 = explist();
+	if(t.kind!=RPAREN)
+	{
+		explist2 = explist();
+	}
+	
 	explist.addAll(explist2);
 	match(RPAREN);
+
 	return explist;
 	
 	case LCURLY:consume();
@@ -731,7 +739,7 @@ private List<Exp> explist() throws Exception{
 			List<Exp> l = new ArrayList<Exp>();
 			Exp e ;
 			e = exp();
-		
+			
 			if(e==null )
 			{
 				throw new SyntaxException(first,"Expression expected in expression list after comma");
@@ -869,7 +877,10 @@ private List<Exp> explist() throws Exception{
 					
 					while(t.kind==COMMA)
 					{
+						
+						
 						consume();
+						
 						e3 = exp();
 						if(e3!=null)
 						{
@@ -885,7 +896,7 @@ private List<Exp> explist() throws Exception{
 					{
 						throw new SyntaxException(first,"Var not ended properly at position "+t.pos+" at line "+t.line);
 					}
-					System.out.println(e2);
+					
 					varlist.add(e2);
 					
 					while(t.kind==COMMA)
@@ -930,7 +941,7 @@ private List<Exp> explist() throws Exception{
 							nm = new Name(first,t.text);
 							consume();
 							match(COLONCOLON);
-							s = new StatLabel(first,nm);
+							s = new StatLabel(first,nm,null,10);
 							return s;
 							}
 						else

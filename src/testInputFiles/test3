@@ -1,0 +1,12 @@
+int x=34;
+int y=016;
+if( x < y )
+	{
+	z=x
+	}
+else
+	{
+	z=y
+	}
+print("The lowest number is
+"+"\t"+z);
