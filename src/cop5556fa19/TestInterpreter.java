@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import cop5556fa19.Parser.SyntaxException;
 import interpreter.ASTVisitorAdapter;
 import interpreter.Interpreter;
+import interpreter.LuaBoolean;
 import interpreter.LuaInt;
 import interpreter.LuaNil;
 import interpreter.LuaString;
@@ -125,7 +126,7 @@ import interpreter.StaticSemanticException;
 		}
 		
 
-		
+		//Pass
 		@Test 
 		void if0() throws Exception {
 			String input = "if true then x=3 end return x";
@@ -135,6 +136,7 @@ import interpreter.StaticSemanticException;
 			List<LuaValue> expected = makeExpectedWithInts(3);
 			assertEquals(expected, ret);
 		}
+		
 		
 		@Test 
 		void if1() throws Exception {
@@ -147,6 +149,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected, ret);
 		}
 		
+		//Pass
 		@Test 
 		void ifnilIsFalse() throws Exception {
 			String input = "if x then x=3 end return x";
@@ -158,6 +161,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected, ret);
 		}
 		
+		//Pass
 		@Test 
 		void ifzeroistrue() throws Exception {
 			String input = "if 0 then x=3 end return x";
@@ -168,6 +172,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected, ret);
 		}
 		
+		//Pass
 		@Test 
 		void if2() throws Exception {
 			String input = "if x then x=3 elseif y then y=4 elseif true then x=10 else y=11 end return x,y";
@@ -179,6 +184,7 @@ import interpreter.StaticSemanticException;
 			expected.add(LuaNil.nil);
 			assertEquals(expected, ret);
 		}
+		
 		
 		@Test 
 		void fail_ifgoto() throws Exception {
@@ -494,6 +500,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected,ret);			
 		}
 		
+		//Pass
 		@Test
 		void testBinary0() throws Exception{
 			String input = "a=2+3 b=3-a c=2*4 d = c/2 e = c%3 return a,b,c,d,e";
@@ -581,14 +588,25 @@ import interpreter.StaticSemanticException;
 		}
 		
 		@Test
-		void bop5() throws Exception{
-			String input = "x,y=\"9\",9 return x&y";
+		void table6() throws Exception{
+			String input = "x = {a=4,b=5,[2]=8} return x[a],x[b],x[2]";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);
-			LuaValue[] vals = {new LuaInt(1)};
-			List<LuaValue> expected = Arrays.asList(vals);
-			assertEquals(expected, ret);
+		//	LuaValue[] vals = {new LuaBoolean(false)};
+			//List<LuaValue> expected = Arrays.asList(vals);
+		//	assertEquals(expected, ret);
+		}
+		
+		@Test
+		void repeat1() throws Exception{
+			String input = "x= {[3]=4} return (x)[3]";
+			show(input);
+			List<LuaValue> ret = interpret(input);
+			show(ret);
+		//	LuaValue[] vals = {new LuaBoolean(false)};
+			//List<LuaValue> expected = Arrays.asList(vals);
+		//	assertEquals(expected, ret);
 		}
 		
 

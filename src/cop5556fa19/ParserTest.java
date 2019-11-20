@@ -717,7 +717,7 @@ class ParserTest {
 	/* Test case for block stat . Starting with do. Should FAIL */
 	@Test	
 	void testblockstatdo5() throws Exception {
-		String input = "do g(k,l)[x.y]=a[b] end end";
+		String input = "do x=1 do x=2 end end return x";
 		Block b = parseBlockAndShow(input);		
 	
 	}
@@ -2097,6 +2097,14 @@ class ParserTest {
 		@Test	
 		void testblockfailcase2() throws Exception {
 			String input = "x = f();";
+			Block b = parseBlockAndShow(input);		
+		
+		}
+		
+		/* INterpreter test*/
+		@Test	
+		void interpretertest1() throws Exception {
+			String input = "do x=5 break end ";
 			Block b = parseBlockAndShow(input);		
 		
 		}
