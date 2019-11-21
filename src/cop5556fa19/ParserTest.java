@@ -2104,7 +2104,7 @@ class ParserTest {
 		/* INterpreter test*/
 		@Test	
 		void interpretertest1() throws Exception {
-			String input = "do x=5 break end ";
+			String input = "if x then x=3 elseif y then y=4 elseif true then x=10 goto label1 else y=11 end z = 12 ::label1:: y=20 return x,y,z";
 			Block b = parseBlockAndShow(input);		
 		
 		}

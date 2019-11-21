@@ -285,6 +285,8 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected, ret);			
 		}
 		
+		//Pass
+		
 		@Test
 		void while0() throws Exception {
 			String input = "i = 5  sum = 0 while i>0 do dummy=print(i) dummy=println(\",\") sum = sum + i   i=i-1 end return sum,i";
@@ -378,9 +380,10 @@ import interpreter.StaticSemanticException;
 			assertEquals(expectedList,ret);
 		}
 		
+		//Pass
 		@Test
 		void table0() throws Exception {
-			String input = "a = {}";
+			String input = "a = {} return a";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);
@@ -390,9 +393,10 @@ import interpreter.StaticSemanticException;
 			assertEquals(expectedList,ret);
 		}
 		
+		//Pass
 		@Test
 		void table1() throws Exception {
-			String input = "a = {\"x\", 2, 3}";
+			String input = "a = {\"x\", 2, 3} return a";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);
@@ -405,9 +409,10 @@ import interpreter.StaticSemanticException;
 			assertEquals(expectedList,ret);
 		}
 		
+		//PAss
 		@Test
 		void table2() throws Exception {
-			String input = "a = {[\"x\"]= 2, [\"y\"]=3}";
+			String input = "a = {[\"x\"]= 2, [\"y\"]=3} return a";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);			
@@ -419,9 +424,10 @@ import interpreter.StaticSemanticException;
 			assertEquals(expectedList,ret);
 		}
 		
+		//Pass
 		@Test
 		void table3() throws Exception {
-			String input = "a = {x=2, y=3}";
+			String input = "a = {x=2, y=3} return a";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);
@@ -433,10 +439,10 @@ import interpreter.StaticSemanticException;
 			assertEquals(expectedList,ret);
 		}
 		
-		
+		//Pass
 		@Test
 		void table4() throws Exception {
-			String input = "x = \"hello\" y= \"goodbye\" a = {[x]=2, [y]=3}";
+			String input = "x = \"hello\" y= \"goodbye\" a = {[x]=2, [y]=3} return a";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);
@@ -511,7 +517,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected,ret);						
 		}
 		
-		
+		//Pass
 		@Test
 		void testSetField0() throws Exception{
 			String input = "a = 4; t={} ; t[a]=5; return t";
@@ -526,7 +532,7 @@ import interpreter.StaticSemanticException;
 		}
 		
 
-		
+		//Pass
 		@Test 
 		void testSetField1() throws Exception{
 			String input = "a = {1,2,3} t= {a} dummy = print(t[1][3]) return t";
@@ -545,6 +551,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expectedList,ret);
 		}
 		
+		//Pass
 		@Test
 		void bop1() throws Exception{
 			String input = "x,y=3,5 return x+y";
@@ -556,6 +563,7 @@ import interpreter.StaticSemanticException;
 			assertEquals(expected, ret);
 		}
 		
+		//Pass
 		@Test
 		void bop2() throws Exception{
 			String input = "x,y=3,5 return x+4";
@@ -600,7 +608,7 @@ import interpreter.StaticSemanticException;
 		
 		@Test
 		void repeat1() throws Exception{
-			String input = "x= {[3]=4} return (x)[3]";
+			String input = "a=5 x={a=3} return x[a]";
 			show(input);
 			List<LuaValue> ret = interpret(input);
 			show(ret);
@@ -609,5 +617,50 @@ import interpreter.StaticSemanticException;
 		//	assertEquals(expected, ret);
 		}
 		
-
+		//Pass
+		@Test
+		void table8() throws Exception{
+			String input = "a= {1,3,5}  b= {2,4,6} x = {a,b} y= {[j]=b,b} z = {[25]=x, [k]=y} return x[a[1]]";//a= {1,3,5} b= {2,4,6} x = {a,b} y= {[j]=b,b} z = {[25]=x, [k]=y} return z
+			show(input);
+			List<LuaValue> ret = interpret(input);
+			show(ret);
+		}
+		
+		//PAss
+		@Test
+		void concat1() throws Exception{
+			String input = "a=\"abc\" b=\"xyz\" c=5 return a..b..c";
+			show(input);
+			List<LuaValue> ret = interpret(input);
+			show(ret);
+		}
+		
+		//PAss
+				@Test
+				void unary1() throws Exception{
+					String input = "a=\"abc\" b=#a return b";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+				}
+		
+				//PAss
+				@Test
+				void label1() throws Exception{
+					String input = "if true then x=3 goto label1 elseif true then goto label2 else ::label1:: y=20 end ::label2:: z=10 ";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+				}
+				
+				
+				@Test
+				void sample1() throws Exception{
+					String input = "x = {}; x[0][0] = true; return x[0][0] ";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+				}
+		
+		
 }
