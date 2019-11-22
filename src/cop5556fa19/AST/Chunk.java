@@ -1,6 +1,7 @@
 package cop5556fa19.AST;
 
 import cop5556fa19.Token;
+import interpreter.SymbolTable;
 
 public class Chunk extends ASTNode {
 	
@@ -8,6 +9,18 @@ public class Chunk extends ASTNode {
 	public final Block block;
 	int numLocals;
 	
+	SymbolTable symboltable ;
+	
+	public SymbolTable getSymboltable() {
+		return symboltable;
+	}
+
+
+	public void setSymboltable(SymbolTable symboltable) {
+		this.symboltable = symboltable;
+	}
+
+
 	public int getNumLocals() {
 		return numLocals;
 	}

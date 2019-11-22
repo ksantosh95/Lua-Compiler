@@ -48,7 +48,12 @@ import interpreter.ASTVisitorAdapter.TypeException;
 
 public class StaticAnalysis implements ASTVisitor {
 	
-	int i=0;
+	
+	int global_block_index=0;
+	Boolean goto_traverse = false;
+	Boolean label_traverse = false;
+	SymbolTable symtable = new SymbolTable();
+	int k;
 
 	@Override
 	public Object visitExpNil(ExpNil expNil, Object arg) throws Exception {
@@ -116,46 +121,18 @@ public class StaticAnalysis implements ASTVisitor {
 		//System.out.println("\n "+block.stats);
 		List<LuaValue> vals=new ArrayList<LuaValue>();
 		Stat s ;
+		int block_index = global_block_index;
 		
-		
-		for (i=0;i < statement_list.size();i++)
+		for (int i=0;i < statement_list.size();i++)
 		{
 			
-			int k= statement_list.size() -1;
-		
-			s = statement_list.get(i);
+			s=statement_list.get(i);
 			
-			if(i<k)
-			{
-				
-			List<Stat> s_list = new ArrayList<Stat>() ;
-			s_list.addAll(statement_list.subList(i+1,k));
-			if(arg!=null)
-			{
-				
-				s_list.addAll((List<Stat>)arg);
-				
-			}
-			//System.out.println(s_list);
-			 vals=(List<LuaValue>) s.visit(this, s_list);
-			}
-			else
-			{
-				
-				List<Stat> s_list = new ArrayList<Stat>() ;
-				s_list.add(statement_list.get(i));
-				if(arg!=null)
-				{
-					
-					s_list.addAll((List<Stat>)arg);
-					
-				}
-				
-				 vals=(List<LuaValue>) s.visit(this, s_list);	
-			}
+			s.visit(this,block_index);
 			
-			//System.out.println(vals);
 		}
+		
+		
 		
 		return null;
 	}
@@ -174,58 +151,57 @@ public class StaticAnalysis implements ASTVisitor {
 
 	@Override
 	public Object visitStatGoto(StatGoto statGoto, Object arg) throws Exception {
-		List<Stat> s_list = (List<Stat>)arg;
-		
-		Stat s ;
-		
-		int k = s_list.size();
-	
-		for(int j=0; j < k;j++)
+		if(goto_traverse)
 		{
-			s = s_list.get(j);
-		//	System.out.println("\n"+s);
-			if(s instanceof StatLabel)
-			{
-			if((statGoto.name).equals((((StatLabel)s).label)))
-			{
-				statGoto.label=(StatLabel)s;
-			}
-			}
+			
+			StatLabel slabel = symtable.get(statGoto.name, (Integer)arg);
+			statGoto.label=slabel;
+			
+			
 		}
-		// TODO Auto-generated method stub
+	
+		
+		
 		return null;
 	}
 
 	@Override
 	public Object visitStatDo(StatDo statDo, Object arg) throws Exception {
-		// TODO Auto-generated method stub
+		global_block_index++;
+		Block b = statDo.b;
+		b.visit(this, arg);
 		return null;
 	}
 
 	@Override
 	public Object visitStatWhile(StatWhile statWhile, Object arg) throws Exception {
-		// TODO Auto-generated method stub
+		global_block_index++;
+		Block b = statWhile.b;
+		b.visit(this, arg);
 		return null;
 	}
 
 	@Override
 	public Object visitStatRepeat(StatRepeat statRepeat, Object arg) throws Exception {
-		// TODO Auto-generated method stub
+		global_block_index++;
+		Block b = statRepeat.b;
+		b.visit(this, arg);
 		return null;
 	}
 
 	@Override
 	public Object visitStatIf(StatIf statIf, Object arg) throws Exception {
-		List<Exp>exp_list = statIf.es;
+		
+		global_block_index++;
+	
 		List<Block> block_list = statIf.bs;
-		Exp e;
+		
 		Block b;
 		int j;
-		LuaValue check;
-		List<LuaValue> exec = new ArrayList<LuaValue>();
-		boolean scope = true;
 		
-		for(j=0;j<exp_list.size();j++)
+		
+		
+		for(j=0;j<block_list.size();j++)
 		{
 			
 			
@@ -236,13 +212,9 @@ public class StaticAnalysis implements ASTVisitor {
 				
 			
 		}
-			 
+		
 			
-		if(block_list.size()==j+1 )
-		{
-			b = block_list.get(j);
-			b.visit(this, arg);
-		}
+		
 		
 		return null;
 	}
@@ -292,11 +264,17 @@ public class StaticAnalysis implements ASTVisitor {
 	@Override
 	public Object visitChunk(Chunk chunk, Object arg) throws Exception {
 		
-		List<LuaValue> vals=new ArrayList<LuaValue>();
+		Block b = chunk.block;
+		label_traverse = true;
+		goto_traverse= false;
+		b.visit(this, arg);
+		label_traverse = false;
+		goto_traverse= true;
+		global_block_index=0;
 		
-		
-		vals = (List<LuaValue>)visitBlock(chunk.block,arg);
-		
+		b.visit(this, arg);
+		//symtable.display();
+		chunk.setSymboltable(symtable);
 		return null;
 	}
 
@@ -363,10 +341,16 @@ public class StaticAnalysis implements ASTVisitor {
 
 	@Override
 	public Object visitLabel(StatLabel statLabel, Object ar) throws Exception {
-		// TODO Auto-generated method stub
-		//System.out.println(ar);
-		statLabel.index = i;
-		//System.out.println(statLabel);
+		
+		if(label_traverse)
+		{
+			
+			
+			statLabel.index = (Integer)ar;
+			
+			symtable.put(statLabel, (Integer)ar);
+			
+		}
 		return null;
 	}
 

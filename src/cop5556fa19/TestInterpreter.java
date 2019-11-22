@@ -647,7 +647,7 @@ import interpreter.StaticSemanticException;
 				//PAss
 				@Test
 				void label1() throws Exception{
-					String input = "if true then x=3 goto label1 elseif true then goto label2 else ::label1:: y=20 end ::label2:: z=10 ";
+					String input = "x=5 do x=3 goto label1 x=7 ::label1:: x=9 end return x ";
 					show(input);
 					List<LuaValue> ret = interpret(input);
 					show(ret);
@@ -656,11 +656,106 @@ import interpreter.StaticSemanticException;
 				
 				@Test
 				void sample1() throws Exception{
-					String input = "x = {}; x[0][0] = true; return x[0][0] ";
+					String input = "x,y = 4+5,println(\"hi\"),34 return x,y";
 					show(input);
 					List<LuaValue> ret = interpret(input);
 					show(ret);
 				}
+				
+				@Test
+				void bop5() throws Exception{
+					String input = "x,y=12,5,2 z=-(x/y)*5 return z,(x//y)%2";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					List<LuaValue> expected = makeExpectedWithInts(-10,0);
+					
+					assertEquals(expected, ret);
+				}
+				
+				@Test
+				void bop6() throws Exception{
+					String input = "x,y = \"30\",20 if true then x = -(y^2) end return x,y";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					List<LuaValue> expected = makeExpectedWithInts(-400,20);
+					assertEquals(expected, ret);
+				}
+				
+				@Test
+				void bop7() throws Exception{
+					String input = "x,y = \"30\",\"25\" if x>y then x=10; goto label1 y=20 end ::label1:: z = #y return x,y,z";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					
+				}
+				
+				@Test
+				void bop8() throws Exception{
+					String input = "if false and false then w=10 end if true and false then x=10 end if true and true then y=10 end if false and true then z=10 end return w,x,y,z";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					
+				}
+				
+				@Test
+				void bop9() throws Exception{
+					String input = "if false or false then w=10 end if true or false then x=10 end if true or true then y=10 end if false or true then z=30 end return w,x,y,z";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					LuaValue[] vals = {new LuaInt(8)};
+					List<LuaValue> expected = Arrays.asList(vals);
+					assertEquals(expected, ret);
+				}
+				
+				@Test
+				void bop10() throws Exception{
+					String input = "x,y=3,5 return 4+4";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					LuaValue[] vals = {new LuaInt(8)};
+					List<LuaValue> expected = Arrays.asList(vals);
+					assertEquals(expected, ret);
+				}
+				
+				@Test
+				void bop11() throws Exception{
+					String input = "x,y=3,5 return 4+4";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					LuaValue[] vals = {new LuaInt(8)};
+					List<LuaValue> expected = Arrays.asList(vals);
+					assertEquals(expected, ret);
+				}
+				
+				@Test
+				void bop12() throws Exception{
+					String input = "x,y=3,5 return 4+4";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					LuaValue[] vals = {new LuaInt(8)};
+					List<LuaValue> expected = Arrays.asList(vals);
+					assertEquals(expected, ret);
+				}
+				
+				@Test
+				void bop13() throws Exception{
+					String input = "x,y=3,5 return 4+4";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					LuaValue[] vals = {new LuaInt(8)};
+					List<LuaValue> expected = Arrays.asList(vals);
+					assertEquals(expected, ret);
+				}
+				
 		
 		
 }
