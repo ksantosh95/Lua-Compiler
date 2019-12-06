@@ -874,7 +874,7 @@ class ScannerTest {
 	/*Inserting quotes  in string literal - should fail*/
 	@Test
 	void test30() throws Exception {
-		Reader r = new StringReader("- -2 --c");
+		Reader r = new StringReader("a = {\\nbcd\\\"efg\\\"}");
 		Scanner s = new Scanner(r);
 		Token t;
 		do

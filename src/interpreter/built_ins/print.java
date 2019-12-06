@@ -11,6 +11,7 @@ public class print extends JavaFunction{
 	@Override
 	public List<LuaValue> call(List<LuaValue> functionargs) {
 		for (LuaValue v: functionargs) {
+			
 			System.out.print(v);
 		}
 		return new ArrayList<LuaValue>();

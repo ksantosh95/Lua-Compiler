@@ -756,6 +756,46 @@ import interpreter.StaticSemanticException;
 					assertEquals(expected, ret);
 				}
 				
+				@Test
+				void failedtestcase1() throws Exception{
+					String input = "x = { \nprint(\n\"This is returning nothing. Should this throw?\"\n) \n} \nreturn x";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					
+				}
+				
+				
+				@Test
+				void failedtestcase2() throws Exception{
+					String input = "a=toNumber(\"2\"); return 1+a";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					
+				}
+				
+				
+				@Test
+				void failedtestcase3() throws Exception{
+					String input = "a = toNumber(\"33\"); return a";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					
+				}
 		
-		
+				
+
+				
+				@Test
+				void failedtestcase4() throws Exception{
+					String input = "do\n    goto canItSeeThisLabel    ::gotoCanSeeThisLabel::\r\n    return 'obviously it wont hit this'\r\nend\r\n::canItSeeThisLabel::\r\nreturn 'in outer scopes does the label need to occur before the block containing the goto statement?'";
+					show(input);
+					List<LuaValue> ret = interpret(input);
+					show(ret);
+					
+				}
+				
+				
 }

@@ -155,6 +155,8 @@ public class StaticAnalysis implements ASTVisitor {
 		{
 			
 			StatLabel slabel = symtable.get(statGoto.name, (Integer)arg);
+			
+			
 			statGoto.label=slabel;
 			
 			

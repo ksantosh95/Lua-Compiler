@@ -386,7 +386,7 @@ private Exp andExp() throws Exception{
 			consume();
 			
 			List<Field> fl = fieldlist();
-			
+		
 			match(RCURLY);
 			e2 = new ExpTable(first,fl);
 			return e2;
@@ -400,6 +400,7 @@ private Exp andExp() throws Exception{
 	private List<Field> fieldlist() throws Exception{
 	List<Field> fl = new ArrayList<Field>();
 		Field f = field();
+		
 		if(f!=null)
 		{
 			fl.add(f);	
@@ -426,7 +427,7 @@ private Exp andExp() throws Exception{
 	Field f;
 	Exp key;
 	Exp value;
-	
+	Exp exp1;
 	switch(t.kind)
 	{
 	case LSQUARE:
@@ -445,8 +446,9 @@ private Exp andExp() throws Exception{
 	case NAME:
 		//System.out.println(t);
 		Name nm = new Name(first,t.text);
-		Exp r = new ExpName(t);
-		consume();
+		exp1 = exp();
+		if(exp1 instanceof ExpName)
+		{
 		if(t.kind==ASSIGN)
 		{
 		match(ASSIGN);
@@ -457,9 +459,14 @@ private Exp andExp() throws Exception{
 		else
 		{
 			
-			return new FieldImplicitKey(first,r);
+			return new FieldImplicitKey(first,exp1);
 		}
-	
+		}
+		else
+		{
+			f = new FieldImplicitKey(first,exp1);
+			return f;
+		}
 	case RCURLY:
 		return null;
 	default:
@@ -868,7 +875,9 @@ private List<Exp> explist() throws Exception{
 					}
 					match(ASSIGN);
 					
+					
 					e3= exp();
+					
 					if(e3==null)
 					{
 						throw new SyntaxException(first,"Expression expected in statement");

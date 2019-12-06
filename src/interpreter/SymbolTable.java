@@ -66,23 +66,28 @@ public class SymbolTable {
 	public StatLabel get(Name nm,int ind )
 	{
 		ArrayList<StatLabel> slist= new ArrayList<>();
-		ArrayList<StatLabel> m = map.get(ind);
-		if(m ==null)
+		while(ind>=0)
 		{
-			return null;
-		}
-		else
-		{
-			slist=m;
-		
-		for(StatLabel s:slist )
-		{
-			if((nm.name).equals((s.label).name))
+			ArrayList<StatLabel> m = map.get(ind);
+			if(m ==null)
 			{
-				return s;
+				return null;
 			}
+			else
+			{
+				slist=m;
+			
+			for(StatLabel s:slist )
+			{
+				if((nm.name).equals((s.label).name))
+				{
+					return s;
+				}
+			}
+			}
+			ind--;
 		}
-		}
+		
 		return null;
 	}
 	

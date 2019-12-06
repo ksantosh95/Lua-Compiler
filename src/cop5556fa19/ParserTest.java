@@ -2104,7 +2104,15 @@ class ParserTest {
 		/* INterpreter test*/
 		@Test	
 		void interpretertest1() throws Exception {
-			String input = "x=-2^3";
+			String input = "x = { \nprint(\n\"This is returning nothing. Should this throw?\"\n) \n} \nreturn x";
+			Block b = parseBlockAndShow(input);		
+		
+		}
+		
+		/* INterpreter test*/
+		@Test	
+		void interpretertest2() throws Exception {
+			String input = "do\n    goto canItSeeThisLabel    ::gotoCanSeeThisLabel::\r\n    return 'obviously it wont hit this'\r\nend\r\n::canItSeeThisLabel::\r\nreturn 'in outer scopes does the label need to occur before the block containing the goto statement?'";
 			Block b = parseBlockAndShow(input);		
 		
 		}

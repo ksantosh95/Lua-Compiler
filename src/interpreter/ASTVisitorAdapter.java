@@ -92,7 +92,8 @@ public abstract class ASTVisitorAdapter implements ASTVisitor {
 	Name goto_label_name;
 	int global_block_index=0;
 	Boolean loop_body=false;
-	
+	Block global_block;
+	int run_value=1;
 	
 	@SuppressWarnings("serial")
 	public
@@ -879,12 +880,19 @@ public abstract class ASTVisitorAdapter implements ASTVisitor {
 		lt_list.add(lt);
 		
 		List<cop5556fa19.AST.Field> fl = expTableConstr.fields;
+		
 		for (int i=0;i<fl.size();i++)
 		{
 			fval = fl.get(i);
+		
 			 lt_list= (List<LuaTable>)fval.visit(this, lt_list);
-			 lt = lt_list.get(1);
 			
+		
+			
+			 lt = lt_list.get(1);	 
+			 
+			 
+			 
 		}
 		
 		return lt;
@@ -898,7 +906,7 @@ public abstract class ASTVisitorAdapter implements ASTVisitor {
 
 	@Override
 	public Object visitParList(ParList parList, Object arg) throws Exception {
-		System.out.println("parlist reached");
+		
 		throw new UnsupportedOperationException();
 	}
 
@@ -941,17 +949,20 @@ LuaString s = new LuaString(name.name) ;
 	try {
 		
 		for (Stat s  : statement_list)
-		{	 
+		{	
+			
 			
 			if(s instanceof StatLabel)
 			{
+				
 				s.visit(this, arg);
 			}
 			
 			if(!jump)
 			{
-				
+					
 			vals=(List<LuaValue>) s.visit(this, arg);
+			
 			
 			 if(vals!=null )
 			 {
@@ -965,17 +976,32 @@ LuaString s = new LuaString(name.name) ;
 		}
 		if(jump)
 		{
-			
+			if(run_value==2)
+			{
+				
+				return null;
+			}
 			throw new StaticSemanticException(block.firstToken,"");
 		}
+		
 		return vals;
 		
 	}
 	catch(GotoException e)
 	{
-		
-		
-			return (List<LuaValue>)visitBlock(block,arg);
+	
+			vals= (List<LuaValue>)visitBlock(block,arg);
+			if(vals==null && run_value==2 && (block_index!=0))
+			{
+				if(block_index==1)
+				{
+					run_value=1;
+				}
+				throw new GotoException();
+			}
+			
+				
+			return vals;
 		
 		
 	}
@@ -1033,6 +1059,7 @@ LuaString s = new LuaString(name.name) ;
 	@Override
 	public Object visitStatGoto(StatGoto statGoto, Object arg) throws Exception {
 		goto_label_name = statGoto.name;
+		run_value=2;
 		jump = true;
 		throw new GotoException();
 		//	throw new UnsupportedOperationException();
@@ -1044,12 +1071,14 @@ LuaString s = new LuaString(name.name) ;
 		global_block_index++;
 		List<LuaValue> lua_ret_list=new ArrayList<LuaValue>();
 		Block b = statDo.b;
+		
 		try {
 		lua_ret_list = (List<LuaValue>)b.visit(this, arg);
 		if(return_value==1)
 		{
 			do_return=1;
 		}
+		
 		return lua_ret_list;
 		}
 		catch(BreakException be)
@@ -1269,7 +1298,7 @@ LuaString s = new LuaString(name.name) ;
 		LuaValue val,val1 = null;
 		for (Exp e : exp_list)
 		{
-			
+				
 			
 			val = (LuaValue)e.visit(this,arg);
 			
@@ -1304,7 +1333,7 @@ LuaString s = new LuaString(name.name) ;
 	public Object visitChunk(Chunk chunk, Object arg) throws Exception {
 		symtable = chunk.getSymboltable();
 		List<LuaValue> vals=new ArrayList<LuaValue>();
-	
+		global_block = chunk.block;
 	
 		vals = (List<LuaValue>)visitBlock(chunk.block,arg);
 		return vals;
@@ -1366,7 +1395,12 @@ LuaString s = new LuaString(name.name) ;
 		LuaTable _G = ((List<LuaTable>)arg).get(0);
 		
 		LuaValue v = (LuaValue)val.visit(this, _G);
-		lt.putImplicit(v);
+		if(v!=null)
+		{
+			lt.putImplicit(v);	
+		}
+		
+		
 		((List<LuaTable>)arg).remove(1);
 		((List<LuaTable>)arg).add(lt);
 		
@@ -1392,7 +1426,8 @@ LuaString s = new LuaString(name.name) ;
 
 	@Override
 	public Object visitExpVarArgs(ExpVarArgs expVarArgs, Object arg) {
-		System.out.println("reached expvarargs");
+		
+		
 		throw new UnsupportedOperationException();
 	}
 
@@ -1409,14 +1444,17 @@ LuaString s = new LuaString(name.name) ;
 		
 		varlist = statAssign.varList;
 		explist = statAssign.expList;
+		
 		if(varlist.size()>=explist.size())
 		{
+			
 			int size = explist.size();
 			varlist = varlist.subList(0, size);
 		}
 		
 		for(int i=0;i<varlist.size();i++)
 		{
+			
 			Exp v = varlist.get(i);
 			
 			if(v.getClass() == ename.getClass())
@@ -1430,10 +1468,11 @@ LuaString s = new LuaString(name.name) ;
 				exp.add((LuaValue)e.visit(this, arg));
 				
 				((LuaTable)arg).put(var.get(i), exp.get(i));
+				
 			}
 			else if(v.getClass()==et.getClass())
 			{
-				
+					
 				et = (ExpTableLookup)v;
 				
 				LuaValue k = (LuaValue)(et.key).visit(this, arg);
@@ -1544,7 +1583,9 @@ LuaString s = new LuaString(name.name) ;
 			toNumber num = new toNumber();
 			for (Exp p:par)
 			{
+				
 				l.add((LuaValue)p.visit(this, arg));
+				
 			}
 			if(f_name.getClass()==nm.getClass())
 			{
@@ -1555,6 +1596,8 @@ LuaString s = new LuaString(name.name) ;
 				{
 					
 					ret = (List<LuaValue>)fun_p.call(l);
+					
+					
 				}
 				else if(s.equals("println"))
 				{
@@ -1563,7 +1606,10 @@ LuaString s = new LuaString(name.name) ;
 				}
 				else if(s.equals("toNumber"))
 				{
+					
 					ret = (List<LuaValue>)num.call(l);
+					
+					return ret.get(0);
 				}
 				else
 				{
@@ -1584,13 +1630,23 @@ LuaString s = new LuaString(name.name) ;
 	@Override
 	public Object visitLabel(StatLabel statLabel, Object ar) throws Exception {
 		Name key = statLabel.label;
-		Boolean exists_flg = symtable.StatExists(key,statLabel.index);
+		
+		Boolean exists_flg = 	symtable.StatExists(key,statLabel.index);
+		
+		
 		
 		if(exists_flg)
 		{
-			
-			jump=false;
-			goto_label_name=null;
+			if(goto_label_name != null)
+			{
+			if((goto_label_name.name).equals(key.name))
+			{
+				
+				jump=false;
+				goto_label_name=null;
+				run_value=1;
+			}
+			}
 		}
 		
 		return null;
@@ -1599,7 +1655,7 @@ LuaString s = new LuaString(name.name) ;
 
 	@Override
 	public Object visitFieldList(FieldList fieldList, Object arg) {
-		System.out.println("fieldlist");
+		
 		throw new UnsupportedOperationException();
 	}
 
