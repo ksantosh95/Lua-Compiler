@@ -3,47 +3,48 @@ package interpreter;
 import java.util.ArrayList;
 import java.util.List;
 
-import cop5556fa19.AST.ASTVisitor;
-import cop5556fa19.AST.Block;
-import cop5556fa19.AST.Chunk;
-import cop5556fa19.AST.Exp;
-import cop5556fa19.AST.ExpBinary;
-import cop5556fa19.AST.ExpFalse;
-import cop5556fa19.AST.ExpFunction;
-import cop5556fa19.AST.ExpFunctionCall;
-import cop5556fa19.AST.ExpInt;
-import cop5556fa19.AST.ExpList;
-import cop5556fa19.AST.ExpName;
-import cop5556fa19.AST.ExpNil;
-import cop5556fa19.AST.ExpString;
-import cop5556fa19.AST.ExpTable;
-import cop5556fa19.AST.ExpTableLookup;
-import cop5556fa19.AST.ExpTrue;
-import cop5556fa19.AST.ExpUnary;
-import cop5556fa19.AST.ExpVarArgs;
-import cop5556fa19.AST.FieldExpKey;
-import cop5556fa19.AST.FieldImplicitKey;
-import cop5556fa19.AST.FieldList;
-import cop5556fa19.AST.FieldNameKey;
-import cop5556fa19.AST.FuncBody;
-import cop5556fa19.AST.FuncName;
-import cop5556fa19.AST.Name;
-import cop5556fa19.AST.ParList;
-import cop5556fa19.AST.RetStat;
-import cop5556fa19.AST.Stat;
-import cop5556fa19.AST.StatAssign;
-import cop5556fa19.AST.StatBreak;
-import cop5556fa19.AST.StatDo;
-import cop5556fa19.AST.StatFor;
-import cop5556fa19.AST.StatForEach;
-import cop5556fa19.AST.StatFunction;
-import cop5556fa19.AST.StatGoto;
-import cop5556fa19.AST.StatIf;
-import cop5556fa19.AST.StatLabel;
-import cop5556fa19.AST.StatLocalAssign;
-import cop5556fa19.AST.StatLocalFunc;
-import cop5556fa19.AST.StatRepeat;
-import cop5556fa19.AST.StatWhile;
+import luaCompiler.AST.ASTVisitor;
+import luaCompiler.AST.Block;
+import luaCompiler.AST.Chunk;
+import luaCompiler.AST.Exp;
+import luaCompiler.AST.ExpBinary;
+import luaCompiler.AST.ExpFalse;
+import luaCompiler.AST.ExpFunction;
+import luaCompiler.AST.ExpFunctionCall;
+import luaCompiler.AST.ExpInt;
+import luaCompiler.AST.ExpList;
+import luaCompiler.AST.ExpName;
+import luaCompiler.AST.ExpNil;
+import luaCompiler.AST.ExpString;
+import luaCompiler.AST.ExpTable;
+import luaCompiler.AST.ExpTableLookup;
+import luaCompiler.AST.ExpTrue;
+import luaCompiler.AST.ExpUnary;
+import luaCompiler.AST.ExpVarArgs;
+import luaCompiler.AST.FieldExpKey;
+import luaCompiler.AST.FieldImplicitKey;
+import luaCompiler.AST.FieldList;
+import luaCompiler.AST.FieldNameKey;
+import luaCompiler.AST.FuncBody;
+import luaCompiler.AST.FuncName;
+import luaCompiler.AST.FunctionCall;
+import luaCompiler.AST.Name;
+import luaCompiler.AST.ParList;
+import luaCompiler.AST.RetStat;
+import luaCompiler.AST.Stat;
+import luaCompiler.AST.StatAssign;
+import luaCompiler.AST.StatBreak;
+import luaCompiler.AST.StatDo;
+import luaCompiler.AST.StatFor;
+import luaCompiler.AST.StatForEach;
+import luaCompiler.AST.StatFunction;
+import luaCompiler.AST.StatGoto;
+import luaCompiler.AST.StatIf;
+import luaCompiler.AST.StatLabel;
+import luaCompiler.AST.StatLocalAssign;
+import luaCompiler.AST.StatLocalFunc;
+import luaCompiler.AST.StatRepeat;
+import luaCompiler.AST.StatWhile;
 import interpreter.ASTVisitorAdapter.TypeException;
 
 public class StaticAnalysis implements ASTVisitor {
@@ -364,6 +365,12 @@ public class StaticAnalysis implements ASTVisitor {
 
 	@Override
 	public Object visitExpName(ExpName expName, Object arg) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visitFunctionCall(FunctionCall functionCall, Object arg) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,0 +1,6 @@
+x=24;
+y=30; 
+if x > y 
+then result = println("The greater number is x with value"); return x;
+else result = println("The greater number is y with value"); return y;
+end 

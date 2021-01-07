@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import cop5556fa19.AST.Name;
-import cop5556fa19.AST.Stat;
-import cop5556fa19.AST.StatLabel;
+import luaCompiler.AST.Name;
+import luaCompiler.AST.Stat;
+import luaCompiler.AST.StatLabel;
 import interpreter.LuaTable.IllegalTableKeyException;
 
 public class SymbolTable {

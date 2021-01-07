@@ -1,6 +1,6 @@
 package interpreter;
 
-import cop5556fa19.Token;
+import luaCompiler.Token;
 
 @SuppressWarnings("serial")
 public class StaticSemanticException extends Exception {

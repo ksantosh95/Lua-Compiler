@@ -1,12 +1,6 @@
-int x=34;
-int y=016;
-if( x < y )
-	{
-	z=x
-	}
-else
-	{
-	z=y
-	}
-print("The lowest number is
-"+"\t"+z);
+x=24;
+y=16; 
+if x > y 
+then result = println("The greater number is"); return x;
+else result = println("The greater number is"); return y;
+end 
